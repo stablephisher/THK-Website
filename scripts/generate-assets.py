@@ -18,6 +18,20 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 ROOT = Path(__file__).resolve().parent.parent
+
+
+def _site_host():
+    """
+    The canonical host, read from src/data/site.js rather than repeated here.
+
+    It was hard-coded, and stayed pointing at a domain that was never registered
+    long after site.js had moved on — so the social card advertised a dead
+    address to everyone who saw a shared link.
+    """
+    import re
+    src = (ROOT / "src" / "data" / "site.js").read_text(encoding="utf-8")
+    m = re.search(r"url:\s*'https://([^']+)'", src)
+    return m.group(1) if m else "talikotaharikrishna.com"
 OUT = ROOT / "public"
 OUT.mkdir(exist_ok=True)
 
@@ -137,7 +151,7 @@ def make_og():
 
     # Footer strip
     d.rectangle([0, H - 62, W - PANEL - 8, H], fill=INK)
-    track(d, (x, H - 44), "HARIKRISHNATALIKOTA.COM",
+    track(d, (x, H - 44), _site_host().upper(),
           font("Montserrat-Bold.ttf", 17), BRAND, 3.4)
 
     img.save(OUT / "og-image.png", "PNG", optimize=True)
