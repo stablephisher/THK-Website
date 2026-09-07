@@ -32,7 +32,7 @@ const Seo = ({
     // name.
     const fullTitle = title
       ? `${title} | ${site.name}`
-      : `${site.name} — Kanaka Durga Devasthanam Board Member`
+      : `${site.name} — Devasthanam Board Member, Kanaka Durga Temple`
 
     const alt = `${site.name} — ${site.role}`
 

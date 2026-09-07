@@ -143,11 +143,38 @@ def make_og():
 
     # Roles. The temple board seat is the more widely recognised position and
     # the one people actually search for, so it leads.
-    d.text((x, 396), "Board Member", font=font("Montserrat-Bold.ttf", 32), fill=INK)
-    d.text((x, 436), "Sri Kanaka Durga Devasthanam, Indrakeeladri",
-           font=font("Montserrat-SemiBold.ttf", 26), fill=INK)
-    d.text((x, 478), "iTDP Telangana State President  ·  Telugu Desam Party",
-           font=font("Montserrat-Medium.ttf", 21), fill=(92, 74, 12))
+    #
+    # These wrap to the measured field width rather than being laid out by eye.
+    # The Devasthanam's official name is 43 characters and overflowed the text
+    # field straight into the portrait panel when it replaced the shorter
+    # popular name.
+    avail = W - PANEL - 8 - x - 24
+
+    def wrapped(text, f, fill, top, leading):
+        """Draw `text` wrapped to `avail`, return the y below the last line."""
+        words, line, y = text.split(), "", top
+        for word in words:
+            probe = f"{line} {word}".strip()
+            if d.textlength(probe, font=f) <= avail:
+                line = probe
+            else:
+                d.text((x, y), line, font=f, fill=fill)
+                y += leading
+                line = word
+        if line:
+            d.text((x, y), line, font=f, fill=fill)
+            y += leading
+        return y
+
+    d.text((x, 388), "Board Member", font=font("Montserrat-Bold.ttf", 32), fill=INK)
+    y = wrapped(
+        "Sri Durga Malleswara Swamy Varla Devasthanam, Indrakeeladri",
+        font("Montserrat-SemiBold.ttf", 25), INK, 430, 33,
+    )
+    wrapped(
+        "iTDP Telangana State President  ·  Telugu Desam Party Telangana",
+        font("Montserrat-Medium.ttf", 20), (92, 74, 12), y + 6, 26,
+    )
 
     # Footer strip
     d.rectangle([0, H - 62, W - PANEL - 8, H], fill=INK)
