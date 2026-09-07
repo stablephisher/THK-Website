@@ -1,4 +1,4 @@
-# Official website of Hari Krishna Talikota — iTDP Telangana State President
+# Official website of Talikota Hari Krishna — iTDP Telangana State President
 # https://www.robotstxt.org/robotstxt.html
 
 User-agent: *
@@ -6,7 +6,7 @@ Allow: /
 
 # --- Generative engines (GEO) ------------------------------------------------
 # These crawlers feed AI answer engines. Allowing them is what lets an
-# assistant answer "who is Hari Krishna Talikota?" from this site directly,
+# assistant answer "who is Talikota Hari Krishna?" from this site directly,
 # rather than from a third-party summary of him.
 
 User-agent: GPTBot

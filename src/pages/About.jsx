@@ -35,7 +35,7 @@ const About = () => {
     <>
       <Seo
         title="Biography & Public Service"
-        description="Biography of Hari Krishna Talikota — Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam, Indrakeeladri, and iTDP Telangana State President, TDP."
+        description="Biography of Talikota Hari Krishna — Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam, Indrakeeladri, and iTDP Telangana State President, TDP."
         schema={schema}
       />
 
@@ -128,7 +128,7 @@ const About = () => {
           <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
             <Reveal className="lg:col-span-5">
               <p className="eyebrow">The Party Office</p>
-              <h2 className="mt-5 font-display text-title">What the State President does</h2>
+              <h2 className="mt-5 font-display text-title">What the iTDP State President does</h2>
               <p className="mt-6 text-ink-600">
                 As {site.secondaryRole}, the work spans organisation-building, representation,
                 and keeping the party answerable to the citizens it serves.

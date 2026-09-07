@@ -116,7 +116,7 @@ const Navbar = () => {
             aria-label={`${site.name} — home`}
           >
             <span className="relative font-display text-[1.02rem] font-bold leading-none tracking-tight text-ink-900 sm:text-[1.3rem]">
-              Hari Krishna Talikota
+              Talikota Hari Krishna
               <span
                 className="absolute -bottom-1.5 left-0 h-[2px] w-full origin-left bg-ink-900 transition-transform duration-300 group-hover:scale-x-105"
                 aria-hidden="true"

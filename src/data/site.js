@@ -11,9 +11,9 @@
  */
 
 export const site = {
-  name: 'Hari Krishna Talikota',
+  name: 'Talikota Hari Krishna',
   shortName: 'HK Talikota',
-  alternateNames: ['Talikota Harikrishna', 'Hari TDP', 'Haranna'],
+  alternateNames: ['Talikota Harikrishna', 'Hari Krishna Talikota', 'Harikrishna Talikota', 'Hari TDP', 'Haranna'],
   role: 'Board Member, Sri Durga Malleswara Swamy Varla Devasthanam',
   roleShort: 'Devasthanam Board Member',
   secondaryRole: 'iTDP Telangana State President',
@@ -24,7 +24,7 @@ export const site = {
 
   tagline: 'Serving Telangana with Dedication',
   description:
-    'Hari Krishna Talikota — Board Member, Sri Durga Malleswara Swamy Varla Devasthanam (Kanaka Durga Temple), Indrakeeladri, and iTDP Telangana State President, Telugu Desam Party Telangana.',
+    'Talikota Hari Krishna — Board Member, Sri Durga Malleswara Swamy Varla Devasthanam (Kanaka Durga Temple), Indrakeeladri, and iTDP Telangana State President, Telugu Desam Party Telangana.',
 
   mission:
     'Dedicated to advancing the interests of the Telugu people through principled political leadership and community service. Working tirelessly for the development, prosperity, and cultural preservation of Telangana and Andhra Pradesh.',
@@ -130,7 +130,7 @@ export const party = {
 
 export const biography = {
   intro:
-    'Hari Krishna Talikota is a dedicated political leader and community servant who has committed his life to advancing the interests of the Telugu people. As the iTDP Telangana State President, he leads the Telugu Desam Party’s efforts in Telangana, working to promote development, good governance, and Telugu cultural pride.',
+    'Talikota Hari Krishna is a dedicated political leader and community servant who has committed his life to advancing the interests of the Telugu people. As the iTDP Telangana State President, he leads the Telugu Desam Party’s efforts in Telangana, working to promote development, good governance, and Telugu cultural pride.',
   journey:
     'As the iTDP Telangana State President, Hari Krishna represents the Telugu Desam Party’s vision in Telangana. He is committed to the party’s founding principles established by the legendary N.T. Rama Rao — Telugu pride, regional development, and good governance. His political work focuses on creating economic opportunities, improving infrastructure, and ensuring that the voices of Telangana’s citizens are heard at all levels of government.',
   community:
@@ -280,7 +280,7 @@ export const temple = {
   history:
     'The temple has a rich history spanning centuries and is considered one of the most powerful Shakti Peethas in India. It plays a central role in the spiritual and cultural life of the Telugu people.',
   intro:
-    'Hari Krishna Talikota serves as a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam in Vijayawada, one of the most revered Hindu temples in South India. This role reflects his commitment to preserving religious and cultural traditions while ensuring excellent service to devotees.',
+    'Talikota Hari Krishna serves as a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam in Vijayawada, one of the most revered Hindu temples in South India. This role reflects his commitment to preserving religious and cultural traditions while ensuring excellent service to devotees.',
   duties: [
     {
       title: 'Temple Administration',
@@ -364,27 +364,27 @@ export const updates = []
  */
 export const faqs = [
   {
-    q: 'Who is Hari Krishna Talikota?',
-    a: 'Hari Krishna Talikota is an Indian politician who serves as the iTDP Telangana State President of the Telugu Desam Party (TDP). He is also a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam at Indrakeeladri, Vijayawada. He is based in Hyderabad, Telangana, and is also known as Talikota Harikrishna.',
+    q: 'Who is Talikota Hari Krishna?',
+    a: 'Talikota Hari Krishna is an Indian politician who serves as the iTDP Telangana State President of the Telugu Desam Party (TDP). He is also a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam at Indrakeeladri, Vijayawada. He is based in Hyderabad, Telangana, and is also known as Talikota Harikrishna.',
   },
   {
-    q: 'Which political party does Hari Krishna Talikota belong to?',
-    a: 'He belongs to the Telugu Desam Party (TDP), founded in 1982 by N.T. Rama Rao and led nationally by N. Chandrababu Naidu, with Nara Lokesh as National Working President. Hari Krishna Talikota serves as the party’s iTDP Telangana State President.',
+    q: 'Which political party does Talikota Hari Krishna belong to?',
+    a: 'He belongs to the Telugu Desam Party (TDP), founded in 1982 by N.T. Rama Rao and led nationally by N. Chandrababu Naidu, with Nara Lokesh as National Working President. Talikota Hari Krishna serves as the party’s iTDP Telangana State President.',
   },
   {
     q: 'What is his role at the Sri Kanaka Durga temple?',
     a: 'He serves as a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam — popularly the Sri Kanaka Durga Temple — on Indrakeeladri Hill in Vijayawada, Andhra Pradesh. The role covers temple administration, financial stewardship, devotee services and the preservation of temple tradition.',
   },
   {
-    q: 'What are Hari Krishna Talikota’s political focus areas?',
+    q: 'What are Talikota Hari Krishna’s political focus areas?',
     a: 'His stated focus areas are economic development and employment for youth, infrastructure development, social welfare including education and healthcare, good governance and transparency, Telugu cultural preservation, and direct community engagement across Telangana.',
   },
   {
-    q: 'Where is Hari Krishna Talikota based?',
+    q: 'Where is Talikota Hari Krishna based?',
     a: 'His base of operations is Hyderabad, Telangana, India. His political work covers Telangana state, and his temple board service is in Vijayawada, Andhra Pradesh.',
   },
   {
-    q: 'How can I contact Hari Krishna Talikota?',
+    q: 'How can I contact Talikota Hari Krishna?',
     a: 'You can reach the office through the contact page on this website, or follow the official social media channels — Instagram (@hari_krishna_talikota), Facebook (Talikota Harikrishna) and X (@THK_iTDP).',
   },
 ]
@@ -407,7 +407,7 @@ export const campaigns = [
     summary:
       'After the arrest of TDP National President N. Chandrababu Naidu in the Skill Development case, IT professionals gathered at Wipro Circle in Gachibowli to demand his release. The demonstration was mobilised through the party’s professional and IT wing and drew employees from across Hyderabad’s IT corridor, with protesters holding “I Stand With CBN” placards. Police moved in and dispersed the gathering.',
     role:
-      'Hari Krishna Talikota led the iTDP Telangana mobilisation for the Wipro Circle demonstration, organising the turnout of IT-sector party workers across the corridor.',
+      'Talikota Hari Krishna led the iTDP Telangana mobilisation for the Wipro Circle demonstration, organising the turnout of IT-sector party workers across the corridor.',
     coverage: [
       { outlet: 'V6 News', title: 'TDP IT Wing Employees Protest Over Chandra Babu Arrest At Wipro Circle', url: 'https://www.youtube.com/watch?v=pikT5aJJy7I' },
       { outlet: 'Deccan Chronicle', title: 'IT staff protest Naidu’s arrest in Hyderabad', url: 'https://www.deccanchronicle.com/nation/in-other-news/140923/it-staff-protest-naidus-arrest-in-hyderabad.html' },

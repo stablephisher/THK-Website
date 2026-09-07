@@ -164,7 +164,7 @@ const Media = () => {
     <>
       <Seo
         title="Photo Gallery & Updates"
-        description="Photographs and video from Hari Krishna Talikota’s political and temple service work across Telangana and Andhra Pradesh."
+        description="Photographs and video from Talikota Hari Krishna’s political and temple service work across Telangana and Andhra Pradesh."
         schema={schema}
       />
 

@@ -41,7 +41,7 @@ const Political = () => {
     <>
       <Seo
         title="iTDP Telangana State President"
-        description="Hari Krishna Talikota, iTDP Telangana State President — leading the Telugu Desam Party’s organisation in Telangana, and the Wipro Circle mobilisation."
+        description="Talikota Hari Krishna, iTDP Telangana State President — leading the Telugu Desam Party’s organisation in Telangana, and the Wipro Circle mobilisation."
         schema={schema}
       />
 

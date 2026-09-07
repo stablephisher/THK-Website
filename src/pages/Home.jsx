@@ -47,7 +47,7 @@ const Home = () => {
                     on-page element was malformed. Browsers rendered it correctly,
                     so it never showed up in visual QA. */}
                 <span className="block font-display text-hero text-white">
-                  Hari Krishna <span className="lg:block">Talikota</span>
+                  Talikota <span className="lg:block">Hari Krishna</span>
                 </span>
                 <span
                   className="mt-4 block h-[5px] w-28 bg-brand-500 sm:w-36"

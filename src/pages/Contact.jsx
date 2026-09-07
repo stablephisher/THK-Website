@@ -82,7 +82,7 @@ const Contact = () => {
     <>
       <Seo
         title="Contact"
-        description="Contact Hari Krishna Talikota for political inquiries, media requests, constituent services, or to get involved with TDP Telangana."
+        description="Contact Talikota Hari Krishna for political inquiries, media requests, constituent services, or to get involved with TDP Telangana."
         schema={schema}
       />
 

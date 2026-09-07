@@ -6,7 +6,7 @@ and the android-chrome icons, but none of those files existed. The missing
 og-image is why sharing the link in WhatsApp produced a preview with no image.
 
 These are BRANDED TYPOGRAPHIC assets, not photographs. Once a real approved
-photograph of Hari Krishna Talikota is available, regenerate the OG card with
+photograph of Talikota Hari Krishna is available, regenerate the OG card with
 the portrait composited in — see PHOTO_SLOT below.
 
 Run:  python scripts/generate-assets.py
@@ -135,8 +135,8 @@ def make_og():
     track(d, (x, 92), "VIJAYAWADA  ·  TELANGANA", font("Montserrat-Bold.ttf", 21), (120, 92, 0), 4.2)
 
     # Name — the hero element, sized to stay legible in a WhatsApp thumbnail.
-    d.text((x - 4, 150), "HARI KRISHNA", font=font("Montserrat-ExtraBold.ttf", 82), fill=INK)
-    d.text((x - 4, 240), "TALIKOTA", font=font("Montserrat-ExtraBold.ttf", 82), fill=INK)
+    d.text((x - 4, 150), "TALIKOTA", font=font("Montserrat-ExtraBold.ttf", 82), fill=INK)
+    d.text((x - 4, 240), "HARI KRISHNA", font=font("Montserrat-ExtraBold.ttf", 82), fill=INK)
 
     # Rule
     d.rectangle([x, 358, x + 92, 366], fill=INK)

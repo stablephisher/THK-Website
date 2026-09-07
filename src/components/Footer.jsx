@@ -39,7 +39,7 @@ const Footer = () => {
             {/* Wordmark, matching the header: both names carry equal weight. */}
             <div>
               <span className="relative inline-block font-display text-[1.7rem] font-bold leading-tight tracking-tight text-white">
-                Hari Krishna Talikota
+                Talikota Hari Krishna
                 <span
                   className="absolute -bottom-2 left-0 h-[2px] w-full bg-brand-500"
                   aria-hidden="true"

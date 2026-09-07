@@ -27,7 +27,7 @@ const Seo = ({
     const canonical = `${site.url}${pathname === '/' ? '/' : pathname.replace(/\/$/, '')}`
 
     // No `title` means the homepage, which gets the full descriptive title
-    // rather than a suffix. "Home | Hari Krishna Talikota" would waste the
+    // rather than a suffix. "Home | Talikota Hari Krishna" would waste the
     // single most valuable string on the site — the one Google shows for his
     // name.
     const fullTitle = title

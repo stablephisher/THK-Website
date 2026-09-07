@@ -62,14 +62,19 @@ const Community = () => {
     <>
       <Seo
         title="Board Member, Sri Durga Malleswara Swamy Varla Devasthanam"
-        description="Hari Krishna Talikota’s service as a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam at Indrakeeladri, Vijayawada — temple governance and devotee services."
+        description="Talikota Hari Krishna’s service as a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam at Indrakeeladri, Vijayawada — temple governance and devotee services."
         schema={schema}
       />
 
       <PageHero
-        eyebrow="Devasthanam Board"
-        title="Board Member, Sri Durga Malleswara Swamy Varla Devasthanam"
-        lead={temple.intro}
+        eyebrow="Board Member · Devasthanam"
+        title="Sri Durga Malleswara Swamy Varla Devasthanam"
+        // A short lead, not temple.intro. That runs to 322 characters against
+        // roughly 100 for every other hero, so it pushed the copy to 83% of the
+        // band and left no photograph visible below it. temple.intro moved into
+        // the body section below, which was its only other home — dropping it
+        // from the hero alone would have removed it from the site.
+        lead="One of South India's most revered temples — board service covering governance, devotee facilities and the continuity of tradition."
         photo={photos.bannerCommunity}
       />
 
@@ -81,6 +86,7 @@ const Community = () => {
               <p className="eyebrow">Indrakeeladri, Vijayawada</p>
               <h2 className="mt-5 font-display text-display">{temple.popularName}</h2>
               <div className="mt-8 space-y-5 text-lead text-ink-600">
+                <p>{temple.intro}</p>
                 <p>{temple.significance}</p>
                 <p>{temple.history}</p>
               </div>

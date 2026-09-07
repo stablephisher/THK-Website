@@ -48,8 +48,10 @@ def contrast_with_white(bgr):
 
 # --------------------------------------------------------------- scrim model
 
-# scrim-bottom, from src/styles/index.css. Stops are (height-from-bottom, alpha).
-SCRIM_BOTTOM = [(0.00, 0.92), (0.38, 0.55), (0.78, 0.05), (1.00, 0.05)]
+# scrim-top, from src/styles/index.css. Stops are (depth-from-TOP, alpha) —
+# the copy sits at the top of the band, so the gradient is anchored there and
+# fades to nothing over the photograph below.
+SCRIM_BOTTOM = [(0.00, 0.95), (0.32, 0.90), (0.58, 0.74), (0.82, 0.0), (1.00, 0.0)]
 SCRIM_INK = np.array([9, 10, 10], dtype=np.float64)  # #0A0A09 in BGR
 
 
@@ -70,11 +72,11 @@ def scrim_alpha(h, stops=None):
 
 
 def composite_scrim(band):
-    """Lay the scrim gradient over a band image, bottom-up."""
+    """Lay the scrim gradient over a band image, measured from the TOP down."""
     h = band.shape[0]
     out = band.astype(np.float64).copy()
     for y in range(h):
-        a = scrim_alpha((h - 1 - y) / max(h - 1, 1))
+        a = scrim_alpha(y / max(h - 1, 1))
         out[y] = out[y] * (1 - a) + SCRIM_INK * a
     return out
 
@@ -138,10 +140,12 @@ def crop_band(img, box_w, box_h, pos_x=0.5, pos_y=0.5):
 # Where PageHero's text actually sits, as fractions of the band, measured from
 # the component: items-end, pb-12 (mobile) / pb-16 (>=640), max-w-3xl, and the
 # eyebrow + text-display h1 + text-lead paragraph stack above it.
+# Now measured from the TOP: (band w, band h, left, right, top, bottom) as
+# fractions. The stack is pt-[nav-h + 3rem] then eyebrow, h1 and lead.
+# Text regions measured in the browser, not estimated from the component.
 VIEWPORTS = {
-    #  name        band w   band h   text left..right   text top..bottom (from bottom)
-    "desktop": (1512, int(0.56 * 950), 0.06, 0.55, 0.12, 0.66),
-    "mobile": (375, int(0.46 * 812), 0.05, 0.95, 0.10, 0.72),
+    "desktop": (1512, 605, 0.04, 0.94, 0.20, 0.62),
+    "mobile": (375, 633, 0.04, 0.96, 0.17, 0.64),
 }
 
 AA_LARGE = 3.0   # WCAG 2.1 AA for >=24px or >=18.66px bold
@@ -158,8 +162,7 @@ def audit_banner(slug, focal):
         band = crop_band(img, bw, bh, px, py)
         comped = composite_scrim(band)
         x0, x1 = int(bw * l), int(bw * r)
-        # convert height-from-bottom fractions into row indices
-        y0, y1 = int(bh * (1 - tt)), int(bh * (1 - tb))
+        y0, y1 = int(bh * tb), int(bh * tt)
         region = comped[y0:y1, x0:x1]
         cr = contrast_with_white(region)
         rows[vp] = {

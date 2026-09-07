@@ -36,6 +36,7 @@ const W = {
   'with-nandamuri-balakrishna': [480, 768, 1153],
   'mahanadu-2025': [480, 768, 1024],
   'ntr-anniversary-tribute': [480, 768, 1200, 1600, 1800],
+  'media-collage': [480, 768, 1200, 1800, 2400],
   'amaravati-cm-meeting': [480, 768, 1200, 1800, 2048],
   'csr-summit-hyderabad': [480, 768, 1200, 1600],
 }
@@ -103,6 +104,8 @@ const FOCUS = {
   // Corrected. Detection returned 70% — the dancers' faces — but at banner
   // height that drops the gopuram the photograph is composed around.
   'kuchipudi-natya-kshetram': '45% 46%',
+  // The mosaic is composed dead centre around the emblem.
+  'media-collage': '50% 50%',
 }
 
 const photo = (slug, width, height, alt, extra = {}) => ({
@@ -125,7 +128,7 @@ export const photos = {
     'hero-addressing',
     1820,
     1365,
-    'Hari Krishna Talikota addressing an iTDP Telangana party meeting'
+    'Talikota Hari Krishna addressing an iTDP Telangana party meeting'
   ),
 
   // Head-and-shoulders crop from the greeting photograph. Not placed on a page
@@ -135,14 +138,14 @@ export const photos = {
     'portrait-headshot',
     621,
     828,
-    'Hari Krishna Talikota, iTDP Telangana State President'
+    'Talikota Hari Krishna, iTDP Telangana State President'
   ),
   // Portrait, used inside the biography column (not as a banner).
   about: photo(
     'with-chandrababu-naidu-portrait',
     2048,
     2046,
-    'Hari Krishna Talikota with TDP National President N. Chandrababu Naidu'
+    'Talikota Hari Krishna with TDP National President N. Chandrababu Naidu'
   ),
 
   /**
@@ -158,13 +161,13 @@ export const photos = {
     'medchal-constituency-meeting',
     2048,
     1538,
-    'Hari Krishna Talikota speaking at a constituency opinion-gathering programme in Medchal'
+    'Talikota Hari Krishna speaking at a constituency opinion-gathering programme in Medchal'
   ),
   bannerPolitical: photo(
     'medchal-constituency-dais',
     2048,
     1536,
-    'Hari Krishna Talikota at an opinion-gathering programme in Medchal constituency'
+    'Talikota Hari Krishna at an opinion-gathering programme in Medchal constituency'
   ),
   // The indoor stage frame was tried here and rejected on measurement: behind
   // the banner scrim its mean luminance was 0.025 against this one's 0.117, so
@@ -175,17 +178,19 @@ export const photos = {
     'kuchipudi-natya-kshetram',
     2048,
     1465,
-    'Kuchipudi dancers with Hari Krishna Talikota before the temple gopuram at the Shravana Maasa Nrityotsavam'
+    'Kuchipudi dancers with Talikota Hari Krishna before the temple gopuram at the Shravana Maasa Nrityotsavam'
   ),
-  // Swapped off ntr-anniversary-tribute, which was also a tile in the gallery
-  // directly below it, and whose largest variant is smaller than a full-bleed
-  // desktop band needs.
+  // A generated mosaic of the gallery with the party emblem at its centre,
+  // built by scripts/make-media-banner.py. No single photograph represents an
+  // archive, and the frame that used to sit here also appeared as a tile in the
+  // gallery directly below it.
   bannerMedia: photo(
-    'addressing-itdp-telangana',
-    2048,
-    1365,
-    'Hari Krishna Talikota addressing an iTDP Telangana party meeting'
+    'media-collage',
+    2400,
+    1000,
+    'A mosaic of photographs from Talikota Hari Krishna’s political, temple and cultural work, with the Telugu Desam Party emblem at the centre'
   ),
+
   political: photo(
     'ntr-anniversary-tribute',
     1800,
@@ -196,19 +201,19 @@ export const photos = {
     'bonalu-bangaru-bonam',
     967,
     1409,
-    'Hari Krishna Talikota carrying the bonam during the Sri Bhagyanagar Mahankali Bonalu Jatara procession'
+    'Talikota Hari Krishna carrying the bonam during the Sri Bhagyanagar Mahankali Bonalu Jatara procession'
   ),
   leadership: photo(
     'with-nara-lokesh',
     1290,
     1187,
-    'Hari Krishna Talikota with TDP National Working President Nara Lokesh'
+    'Talikota Hari Krishna with TDP National Working President Nara Lokesh'
   ),
   constituency: photo(
     'medchal-constituency-meeting',
     2048,
     1538,
-    'Hari Krishna Talikota speaking at an opinion-gathering programme in Medchal constituency'
+    'Talikota Hari Krishna speaking at an opinion-gathering programme in Medchal constituency'
   ),
 }
 
@@ -222,7 +227,7 @@ export const gallery = [
       'with-chandrababu-naidu',
       2048,
       1365,
-      'Hari Krishna Talikota welcoming TDP National President N. Chandrababu Naidu'
+      'Talikota Hari Krishna welcoming TDP National President N. Chandrababu Naidu'
     ),
     group: 'party',
     caption: 'Welcoming TDP National President N. Chandrababu Naidu',
@@ -232,7 +237,7 @@ export const gallery = [
       'with-nara-lokesh',
       1290,
       1187,
-      'Hari Krishna Talikota with TDP National Working President Nara Lokesh'
+      'Talikota Hari Krishna with TDP National Working President Nara Lokesh'
     ),
     group: 'party',
     caption: 'With TDP National Working President Nara Lokesh',
@@ -242,7 +247,7 @@ export const gallery = [
       'greeting-chandrababu-naidu',
       1776,
       1677,
-      'Hari Krishna Talikota greeting TDP National President N. Chandrababu Naidu'
+      'Talikota Hari Krishna greeting TDP National President N. Chandrababu Naidu'
     ),
     group: 'party',
     caption: 'Greeting TDP National President N. Chandrababu Naidu',
@@ -252,7 +257,7 @@ export const gallery = [
       'with-party-leadership',
       1729,
       1655,
-      'Hari Krishna Talikota with TDP National President N. Chandrababu Naidu'
+      'Talikota Hari Krishna with TDP National President N. Chandrababu Naidu'
     ),
     group: 'party',
     caption: 'With the TDP national leadership',
@@ -262,7 +267,7 @@ export const gallery = [
       'with-nandamuri-balakrishna',
       1153,
       2048,
-      'Hari Krishna Talikota with Nandamuri Balakrishna, Hindupur MLA, beneath a portrait of N.T. Rama Rao'
+      'Talikota Hari Krishna with Nandamuri Balakrishna, Hindupur MLA, beneath a portrait of N.T. Rama Rao'
     ),
     group: 'party',
     caption: 'With Nandamuri Balakrishna, Hindupur MLA',
@@ -273,7 +278,7 @@ export const gallery = [
       'tdp-44-anniversary',
       960,
       1280,
-      'Hari Krishna Talikota in Telugu Desam Party colours at the party’s 44th anniversary celebration'
+      'Talikota Hari Krishna in Telugu Desam Party colours at the party’s 44th anniversary celebration'
     ),
     group: 'party',
     caption: 'At the Telugu Desam Party’s 44th anniversary celebration',
@@ -284,7 +289,7 @@ export const gallery = [
       'amaravati-cm-meeting',
       2048,
       1283,
-      'Hari Krishna Talikota with family meeting Chief Minister N. Chandrababu Naidu in Amaravati'
+      'Talikota Hari Krishna with family meeting Chief Minister N. Chandrababu Naidu in Amaravati'
     ),
     group: 'party',
     caption: 'Meeting Chief Minister N. Chandrababu Naidu with family in Amaravati',
@@ -313,7 +318,7 @@ export const gallery = [
       'medchal-constituency-meeting',
       2048,
       1538,
-      'Hari Krishna Talikota speaking at an opinion-gathering programme in Medchal constituency'
+      'Talikota Hari Krishna speaking at an opinion-gathering programme in Medchal constituency'
     ),
     group: 'constituency',
     caption: 'Speaking at an opinion-gathering programme in Medchal constituency',
@@ -330,7 +335,7 @@ export const gallery = [
       'csr-summit-hyderabad',
       1600,
       1067,
-      'Hari Krishna Talikota with Narasaraopet MLA Chadalavada Aravind Babu at the CSR Summit, Hyderabad'
+      'Talikota Hari Krishna with Narasaraopet MLA Chadalavada Aravind Babu at the CSR Summit, Hyderabad'
     ),
     group: 'constituency',
     caption: 'With Narasaraopet MLA Chadalavada Aravind Babu at the CSR Summit, Hyderabad',
@@ -340,7 +345,7 @@ export const gallery = [
       'endowments-minister-anam',
       1280,
       577,
-      'Hari Krishna Talikota paying a courtesy call on Endowments Minister Anam Ramanarayana Reddy'
+      'Talikota Hari Krishna paying a courtesy call on Endowments Minister Anam Ramanarayana Reddy'
     ),
     group: 'temple',
     caption: 'A courtesy call on Endowments Minister Anam Ramanarayana Reddy',
@@ -351,7 +356,7 @@ export const gallery = [
       'bonalu-bangaru-bonam',
       967,
       1409,
-      'Hari Krishna Talikota carrying the bonam during the Sri Bhagyanagar Mahankali Bonalu Jatara procession'
+      'Talikota Hari Krishna carrying the bonam during the Sri Bhagyanagar Mahankali Bonalu Jatara procession'
     ),
     group: 'temple',
     caption:
@@ -364,7 +369,7 @@ export const gallery = [
       'jonnawada-kamakshi-thayi',
       1064,
       1472,
-      'Hari Krishna Talikota carrying offerings at Sri Kamakshi Thayi temple, Jonnawada'
+      'Talikota Hari Krishna carrying offerings at Sri Kamakshi Thayi temple, Jonnawada'
     ),
     group: 'temple',
     caption: 'At Sri Kamakshi Thayi temple, Jonnawada',
@@ -386,7 +391,7 @@ export const gallery = [
       'kuchipudi-natyotsavam-stage',
       2048,
       1363,
-      'Hari Krishna Talikota with performers at the Shravana Maasa Nrityotsavam dance festival'
+      'Talikota Hari Krishna with performers at the Shravana Maasa Nrityotsavam dance festival'
     ),
     group: 'culture',
     caption:
