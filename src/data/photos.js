@@ -99,7 +99,12 @@ const FOCUS = {
 
   // Corrected. Detection averaged the standing speaker with the seated row
   // behind him and landed at mid-height; his own face is higher.
-  'medchal-constituency-meeting': '45% 24%',
+  // 24% clipped the standing speaker's head against the top edge of the band.
+  // The focal points were tuned when the scrim was at the BOTTOM, where a
+  // subject high in the frame was the right answer; with the scrim moved to the
+  // top, subjects need headroom and are better placed low, in the part of the
+  // band the gradient leaves clear.
+  'medchal-constituency-meeting': '45% 8%',
 
   // Corrected. Detection returned 70% — the dancers' faces — but at banner
   // height that drops the gopuram the photograph is composed around.

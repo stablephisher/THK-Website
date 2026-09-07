@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { FaArrowRight } from 'react-icons/fa6'
+import PostsFeed from '../components/PostsFeed'
 import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
@@ -151,6 +152,25 @@ const About = () => {
                   </li>
                 ))}
               </ul>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ---- Recent posts ---------------------------------------------------- */}
+      <section className="section bg-ink-50">
+        <div className="container-custom">
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
+            <Reveal className="lg:col-span-4">
+              <p className="eyebrow">In His Own Words</p>
+              <h2 className="mt-5 font-display text-title">Recent posts</h2>
+              <p className="mt-6 text-ink-600">
+                The office posts on X as events happen — party programmes, temple
+                service and constituency work.
+              </p>
+            </Reveal>
+            <Reveal delay={0.1} className="lg:col-span-8">
+              <PostsFeed limit={3} className="max-w-2xl" label="Recent posts" />
             </Reveal>
           </div>
         </div>

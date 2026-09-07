@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { FaInstagram, FaFacebookF, FaXTwitter, FaYoutube } from 'react-icons/fa6'
-import { FaArrowRight, FaRegNewspaper, FaXmark, FaChevronLeft, FaChevronRight, FaPlay } from 'react-icons/fa6'
+import { FaArrowRight, FaXmark, FaChevronLeft, FaChevronRight, FaPlay } from 'react-icons/fa6'
+import PostsFeed from '../components/PostsFeed'
 import Seo from '../components/Seo'
 import PageHero from '../components/PageHero'
 import Reveal from '../components/Reveal'
@@ -13,36 +14,6 @@ const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitt
 
 const formatDate = (iso) =>
   new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
-
-/**
- * Shown while `updates` is empty. The original build filled this space with
- * four invented press events carrying real-looking dates. An empty newsroom
- * that points to the live feeds is honest and still useful.
- */
-const EmptyNewsroom = () => (
-  <Reveal className="border-y hairline py-16 text-center">
-    <span className="mx-auto grid h-12 w-12 place-items-center text-xl text-ink-500">
-      <FaRegNewspaper aria-hidden="true" />
-    </span>
-    <h3 className="mt-5 font-display text-headline text-ink-900">
-      Press releases will appear here
-    </h3>
-    <p className="mx-auto mt-2.5 max-w-md text-sm leading-relaxed text-ink-600">
-      Dated statements and announcements will be published on this page. The photo
-      gallery below records recent activity, and the social channels carry the most
-      current updates.
-    </p>
-    <a
-      href={social.find((s) => s.name === 'X')?.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="btn-primary mt-8"
-    >
-      Latest on X<span className="sr-only"> (opens in a new tab)</span>
-      <FaArrowRight aria-hidden="true" />
-    </a>
-  </Reveal>
-)
 
 /** Full-screen viewer. Keyboard-navigable and focus-trapped at the edges. */
 const Lightbox = ({ items, index, onClose, onStep }) => {
@@ -330,14 +301,19 @@ const Media = () => {
       {/* ---- Newsroom ------------------------------------------------------ */}
       <section className="section bg-ink-50">
         <div className="container-custom">
-          <Reveal className="max-w-2xl">
+          <Reveal className="max-w-3xl">
             <p className="eyebrow">Press Releases</p>
             <h2 className="mt-5 font-display text-display">From the office</h2>
+            <p className="mt-6 text-lead text-ink-600">
+              Dated statements and announcements are published here. Until then, the
+              office posts on X — the most recent are below, and the photo gallery
+              above records recent activity.
+            </p>
           </Reveal>
 
           <div className="mt-12">
             {updates.length === 0 ? (
-              <EmptyNewsroom />
+              <PostsFeed limit={4} className="mx-auto max-w-2xl" label="Recent posts from the office" />
             ) : (
               <div className="grid gap-5 md:grid-cols-2">
                 {updates.map((update, i) => (

@@ -62,7 +62,7 @@ const Community = () => {
     <>
       <Seo
         title="Board Member, Sri Durga Malleswara Swamy Varla Devasthanam"
-        description="Talikota Hari Krishna’s service as a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam at Indrakeeladri, Vijayawada — temple governance and devotee services."
+        description="Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam (Kanaka Durga Temple), Indrakeeladri — governance and devotee services."
         schema={schema}
       />
 

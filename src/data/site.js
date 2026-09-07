@@ -24,7 +24,7 @@ export const site = {
 
   tagline: 'Serving Telangana with Dedication',
   description:
-    'Talikota Hari Krishna — Board Member, Sri Durga Malleswara Swamy Varla Devasthanam (Kanaka Durga Temple), Indrakeeladri, and iTDP Telangana State President, Telugu Desam Party Telangana.',
+    'Talikota Hari Krishna — Board Member, Sri Durga Malleswara Swamy Varla Devasthanam (Kanaka Durga Temple), and iTDP Telangana State President, TDP.',
 
   mission:
     'Dedicated to advancing the interests of the Telugu people through principled political leadership and community service. Working tirelessly for the development, prosperity, and cultural preservation of Telangana and Andhra Pradesh.',
