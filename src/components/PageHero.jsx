@@ -26,13 +26,89 @@ import Picture from './Picture'
  * of the band and white type over the brighter photographs fell to 1.3:1; at
  * 64vh the same scrim clears 5.5:1 everywhere.
  */
-const PageHero = ({ eyebrow, title, lead, photo, focus, compact = false, children }) => {
+const PageHero = ({
+  eyebrow,
+  title,
+  lead,
+  photo,
+  focus,
+  compact = false,
+  titleBelow = false,
+  children,
+}) => {
+  const Copy = (
+    <div className="max-w-none">
+      {eyebrow && (
+        <Reveal as="p" delay={0.05} className="label-rule !text-brand-400 before:!bg-brand-500">
+          {eyebrow}
+        </Reveal>
+      )}
+      <Reveal
+        as="h1"
+        delay={0.13}
+        className="display-wrap mt-6 max-w-none font-display text-[clamp(1.75rem,1.1rem+2.5vw,3.5rem)] font-bold tracking-[-0.02em] text-white"
+      >
+        {title}
+      </Reveal>
+      {lead && (
+        <Reveal as="p" delay={0.21} className="mt-6 max-w-3xl text-lead text-white/80">
+          {lead}
+        </Reveal>
+      )}
+      {children}
+    </div>
+  )
+
+  /*
+   * titleBelow: the photograph gets the whole band and the copy sits under it.
+   *
+   * Used where the subject's face lands exactly where the heading goes, which
+   * is the case on /about — no focal point fixes that, because the type and the
+   * face want the same pixels. Separating them is the only real answer, and it
+   * also lets the photograph be seen undarkened, since nothing is set over it.
+   */
+  if (photo && titleBelow) {
+    return (
+      <section className="border-b-[6px] border-brand-500 bg-ink-950">
+        <div className="relative overflow-hidden pt-[var(--nav-h)]">
+          {/* Taller than the overlay band. Nothing is written over this one, so
+                the height is set by what the photograph needs rather than by
+                what the type needs: at 30vw the standing speaker's head was
+                clipped by the top edge in every crop, because a 3.3:1 letterbox
+                shows barely 40% of a 4:3 frame. */}
+            <div className="relative h-[42vh] min-h-[17rem] sm:h-[46vh] lg:h-[clamp(24rem,43vw,44rem)]">
+            <Picture
+              photo={photo}
+              rounded=""
+              aspect="auto"
+              priority
+              sizes="100vw"
+              className="!absolute inset-0 h-full w-full"
+              position={focus}
+              imgClassName="animate-slow-zoom"
+            />
+            {/* Only a foot-fade, to seat the photograph on the dark ground
+                below it. Nothing is written over the image, so it needs no
+                scrim of its own. */}
+            <div
+              className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-ink-950 to-transparent"
+              aria-hidden="true"
+            />
+          </div>
+        </div>
+        <div className="on-dark container-custom pb-16 pt-10 sm:pt-12">{Copy}</div>
+      </section>
+    )
+  }
+
   return (
-    <section className={`relative isolate flex items-start overflow-hidden border-b-[6px] border-brand-500 bg-ink-950 ${
+    <section
+      className={`relative isolate flex items-start overflow-hidden border-b-[6px] border-brand-500 bg-ink-950 ${
         compact
           ? 'min-h-[34vh] lg:min-h-[38vh]'
           : 'min-h-[78vh] sm:min-h-[70vh] lg:min-h-0 lg:h-[clamp(34rem,40vw,46rem)]'
-      }`}>
+      }`}
+    >
       {photo && (
         <div className="absolute inset-0">
           <Picture
@@ -52,22 +128,7 @@ const PageHero = ({ eyebrow, title, lead, photo, focus, compact = false, childre
       {/* pt clears the fixed masthead explicitly rather than by eye — the
           heading was touching the navigation on short viewports. */}
       <div className="on-dark container-custom relative z-10 pb-16 pt-[calc(var(--nav-h)+2rem)] sm:pt-[calc(var(--nav-h)+3rem)]">
-        <div className="max-w-none">
-          {eyebrow && (
-            <Reveal as="p" delay={0.05} className="label-rule !text-brand-400 before:!bg-brand-500">
-              {eyebrow}
-            </Reveal>
-          )}
-          <Reveal as="h1" delay={0.13} className="display-wrap mt-6 max-w-none font-display text-[clamp(1.75rem,1.1rem+2.5vw,3.5rem)] font-bold tracking-[-0.02em] text-white">
-            {title}
-          </Reveal>
-          {lead && (
-            <Reveal as="p" delay={0.21} className="mt-6 max-w-3xl text-lead text-white/80">
-              {lead}
-            </Reveal>
-          )}
-          {children}
-        </div>
+        {Copy}
       </div>
     </section>
   )

@@ -104,7 +104,7 @@ const FOCUS = {
   // subject high in the frame was the right answer; with the scrim moved to the
   // top, subjects need headroom and are better placed low, in the part of the
   // band the gradient leaves clear.
-  'medchal-constituency-meeting': '45% 8%',
+  'medchal-constituency-meeting': '45% 10%',
 
   // Corrected. Detection returned 70% — the dancers' faces — but at banner
   // height that drops the gopuram the photograph is composed around.
