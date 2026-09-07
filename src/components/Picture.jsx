@@ -34,7 +34,11 @@ const Picture = ({
 }) => {
   const [failed, setFailed] = useState(false)
 
-  const srcSet = photo.widths
+  // Photographs published from the admin panel are served exactly as uploaded,
+  // with no WebP ladder, so `widths` is empty for them. An empty srcSet on a
+  // <source> is invalid markup — the element is omitted entirely instead, and
+  // the <img> below carries the file on its own.
+  const srcSet = (photo.widths ?? [])
     .map((w) => `/photos/${photo.slug}-${w}.webp ${w}w`)
     .join(', ')
 
@@ -67,7 +71,7 @@ const Picture = ({
       style={ratio ? { aspectRatio: ratio } : undefined}
     >
       <picture>
-        <source type="image/webp" srcSet={srcSet} sizes={sizes} />
+        {srcSet && <source type="image/webp" srcSet={srcSet} sizes={sizes} />}
         <img
           src={photo.src}
           alt={photo.alt}

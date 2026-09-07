@@ -67,9 +67,19 @@ const Seo = ({
       { _tag: 'meta', name: 'twitter:image:alt', content: alt },
     ]
 
-    if (noindex) {
-      tags.push({ _tag: 'meta', name: 'robots', content: 'noindex, follow' })
-    }
+    // Always emitted, not only when noindex. index.html carries a static robots
+    // tag, and prerender used to leave it in place — so /admin shipped BOTH
+    // "index, follow" and "noindex, follow". Google resolves a conflict by
+    // taking the most restrictive, so it happened to behave, but it was
+    // ambiguous and some crawlers simply take the first one they see. The
+    // template's tag is now stripped and this is the single source.
+    tags.push({
+      _tag: 'meta',
+      name: 'robots',
+      content: noindex
+        ? 'noindex, follow'
+        : 'index, follow, max-image-preview:large, max-snippet:-1',
+    })
 
     if (schema) {
       tags.push({

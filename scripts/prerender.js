@@ -26,6 +26,14 @@ const DIST = join(ROOT, 'dist')
 // Keep in sync with the <Routes> in src/App.jsx and scripts/generate-sitemap.js.
 const ROUTES = ['/', '/about', '/political', '/community', '/media', '/contact', '/privacy', '/terms']
 
+// Rendered so a direct visit to /admin serves a real file rather than the 404
+// page — every route on a static host needs one. It is deliberately NOT in
+// ROUTES above, because it must stay out of the sitemap: it is an operational
+// page, marked noindex, and its own <Seo> says so. The password is checked in
+// api/publish.js, server-side, so shipping the form as a static file gives away
+// nothing.
+const UNLISTED_ROUTES = ['/admin']
+
 /** Escape a value for use inside a double-quoted HTML attribute. */
 const attr = (v) =>
   String(v)
@@ -76,6 +84,7 @@ function stripTemplateHead(html) {
   return html
     .replace(/<title>[\s\S]*?<\/title>\s*/i, '')
     .replace(/<meta\s+name="description"[^>]*>\s*/gi, '')
+    .replace(/<meta\s+name="robots"[^>]*>\s*/gi, '')
     .replace(/<link\s+rel="canonical"[^>]*>\s*/gi, '')
     .replace(/<meta\s+property="og:[^"]*"[^>]*>\s*/gi, '')
     .replace(/<meta\s+name="twitter:[^"]*"[^>]*>\s*/gi, '')
@@ -101,7 +110,7 @@ async function main() {
   const template = readFileSync(join(DIST, 'index.html'), 'utf8')
 
   let count = 0
-  for (const route of ROUTES) {
+  for (const route of [...ROUTES, ...UNLISTED_ROUTES]) {
     const { html, head } = render(route)
     const page = compose(template, head, html)
 

@@ -25,6 +25,7 @@ import Contact from './pages/Contact'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
 import NotFound from './pages/NotFound'
+import Admin from './pages/Admin'
 
 function App() {
   return (
@@ -47,6 +48,9 @@ function App() {
           <Route path="/terms" element={<Terms />} />
           {/* Catch-all: the footer linked to /privacy and /terms with no routes
               behind them, so those clicks rendered a blank page. */}
+          {/* Operational, not content. Seo marks it noindex and it is left out
+              of the sitemap and the navigation. */}
+          <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

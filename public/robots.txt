@@ -3,6 +3,8 @@
 
 User-agent: *
 Allow: /
+# Operational page, not content. It is also noindex in its own markup.
+Disallow: /admin
 
 # --- Generative engines (GEO) ------------------------------------------------
 # These crawlers feed AI answer engines. Allowing them is what lets an

@@ -9,6 +9,7 @@ import Picture from '../components/Picture'
 import { site, social, updates } from '../data/site'
 import { photos, gallery, galleryGroups } from '../data/photos'
 import { videos, channel } from '../data/videos'
+import uploads from '../data/uploads.json'
 
 const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter, YouTube: FaYoutube }
 
@@ -105,9 +106,33 @@ const Media = () => {
   const [group, setGroup] = useState('all')
   const [lightbox, setLightbox] = useState(null)
 
+  // Published from the admin panel (api/publish.js commits them here). They
+  // carry no responsive variants — they are served as uploaded — so they are
+  // shaped to what <Picture> needs and given their own group.
+  const uploadedPhotos = useMemo(
+    () =>
+      (uploads.photos ?? []).map((u) => ({
+        slug: u.id,
+        src: u.src,
+        widths: [],
+        width: 1600,
+        height: 1067,
+        alt: u.description || u.title,
+        caption: u.title,
+        group: 'recent',
+      })),
+    []
+  )
+
+  // Written updates, newest first, merged with anything hard-coded in site.js.
+  const officeUpdates = [...(uploads.updates ?? []), ...updates]
+
+  // Uploads lead the gallery: newest work first.
+  const allPhotos = useMemo(() => [...uploadedPhotos, ...gallery], [uploadedPhotos])
+
   const shown = useMemo(
-    () => (group === 'all' ? gallery : gallery.filter((g) => g.group === group)),
-    [group]
+    () => (group === 'all' ? allPhotos : allPhotos.filter((g) => g.group === group)),
+    [group, allPhotos]
   )
 
   const step = useCallback(
@@ -312,11 +337,11 @@ const Media = () => {
           </Reveal>
 
           <div className="mt-12">
-            {updates.length === 0 ? (
+            {officeUpdates.length === 0 ? (
               <PostsFeed limit={4} className="mx-auto max-w-2xl" label="Recent posts from the office" />
             ) : (
               <div className="grid gap-5 md:grid-cols-2">
-                {updates.map((update, i) => (
+                {officeUpdates.map((update, i) => (
                   <Reveal
                     key={update.title}
                     delay={i * 0.06}
