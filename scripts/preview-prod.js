@@ -11,6 +11,28 @@
  * This reads the policy out of vercel.json rather than restating it, so the
  * two cannot drift.
  *
+ * WHY THE CACHING RULES LOOK THE WAY THEY DO (vercel.json cannot hold comments —
+ * it is JSON, and Vercel's schema rejects unknown keys outright, failing the
+ * deployment before the build even starts):
+ *
+ *   /assets, /fonts, /photos  -> immutable, one year.
+ *       /assets is content-hashed by Vite, so changed content means a changed
+ *       URL. /fonts filenames encode family+weight+subset, so a given name's
+ *       bytes never change. /photos is slug-named and carries the same hazard
+ *       the favicons hit, but these are the largest assets on the site; if a
+ *       photograph is ever re-cropped, change its slug rather than its bytes.
+ *
+ *   favicons, og-image, tdp-*, site.webmanifest -> revalidate daily.
+ *       These are UNVERSIONED names whose CONTENT changes in place. A blanket
+ *       immutable rule for png/jpg/ico used to catch them, which told every
+ *       browser never to revalidate for a year — so a favicon change never
+ *       reached anyone who had already loaded the old one. immutable is only
+ *       ever correct for content-hashed URLs.
+ *
+ *   They are written as separate literal sources rather than one alternation:
+ *   Vercel parses `source` with path-to-regexp, where nested groups do not mean
+ *   what they mean in a raw regex.
+ *
  *   node scripts/preview-prod.js      -> http://localhost:4180
  */
 import { createServer } from 'node:http'

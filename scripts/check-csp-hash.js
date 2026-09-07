@@ -34,6 +34,41 @@ if (!csp) {
   process.exit(1)
 }
 
+/*
+ * Validate vercel.json's shape before the deploy does.
+ *
+ * Vercel validates this file against a strict schema and rejects unknown
+ * properties — and it does so BEFORE the build runs, so the deployment fails
+ * with no build logs at all, which makes it look like an infrastructure problem
+ * rather than a typo. An explanatory `_comment` key added to three header rules
+ * cost a production deploy exactly this way. JSON has no comments; the
+ * rationale lives in scripts/preview-prod.js instead.
+ */
+const vercel = JSON.parse(readFileSync(join(ROOT, 'vercel.json'), 'utf8'))
+const ALLOWED = {
+  headers: new Set(['source', 'headers', 'has', 'missing']),
+  redirects: new Set(['source', 'destination', 'permanent', 'statusCode', 'has', 'missing']),
+  rewrites: new Set(['source', 'destination', 'has', 'missing']),
+}
+for (const [section, allowed] of Object.entries(ALLOWED)) {
+  ;(vercel[section] ?? []).forEach((rule, i) => {
+    for (const key of Object.keys(rule)) {
+      if (!allowed.has(key)) {
+        console.error(
+          `
+vercel.json FAILED: ${section}[${i}] has unknown property "${key}".
+` +
+            `  Vercel rejects this at deploy time, before the build, so there are no
+` +
+            `  build logs to read. Allowed here: ${[...allowed].join(', ')}.
+`
+        )
+        process.exit(1)
+      }
+    }
+  })
+}
+
 // Executable inline scripts only. `application/ld+json` is data, never run, and
 // is not subject to script-src.
 const inline = [...html.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>([\s\S]*?)<\/script>/gi)]
