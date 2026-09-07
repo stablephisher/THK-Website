@@ -32,7 +32,7 @@ const Seo = ({
     // name.
     const fullTitle = title
       ? `${title} | ${site.name}`
-      : `${site.name} — Kanaka Durga Devasthanam Board Member`
+      : `${site.name} — Devasthanam Board Member, Kanaka Durga Temple`
 
     const alt = `${site.name} — ${site.role}`
 
@@ -50,6 +50,10 @@ const Seo = ({
       { _tag: 'meta', property: 'og:description', content: description },
       { _tag: 'meta', property: 'og:image', content: image },
       { _tag: 'meta', property: 'og:image:secure_url', content: image },
+      // WhatsApp and Facebook use this as a decoding hint. index.html
+      // declared it, but prerender strips the template's og: block in
+      // favour of these, so it was being dropped from every page.
+      { _tag: 'meta', property: 'og:image:type', content: image.endsWith('.png') ? 'image/png' : 'image/jpeg' },
       { _tag: 'meta', property: 'og:image:width', content: '1200' },
       { _tag: 'meta', property: 'og:image:height', content: '630' },
       { _tag: 'meta', property: 'og:image:alt', content: alt },

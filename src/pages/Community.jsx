@@ -20,7 +20,7 @@ const Community = () => {
     '@graph': [
       {
         '@type': 'WebPage',
-        name: 'Board Member, Sri Kanaka Durga Devasthanam',
+        name: 'Board Member, Sri Durga Malleswara Swamy Varla Devasthanam',
         url: `${site.url}/community`,
         about: { '@id': `${site.url}/#devasthanam` },
       },
@@ -61,14 +61,14 @@ const Community = () => {
   return (
     <>
       <Seo
-        title="Board Member, Sri Kanaka Durga Devasthanam"
-        description="Hari Krishna Talikota’s service as a Board Member of the Sri Kanaka Durga Devasthanam at Indrakeeladri, Vijayawada — temple governance and devotee services."
+        title="Board Member, Sri Durga Malleswara Swamy Varla Devasthanam"
+        description="Hari Krishna Talikota’s service as a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam at Indrakeeladri, Vijayawada — temple governance and devotee services."
         schema={schema}
       />
 
       <PageHero
         eyebrow="Devasthanam Board"
-        title="Board Member, Sri Kanaka Durga Devasthanam"
+        title="Board Member, Sri Durga Malleswara Swamy Varla Devasthanam"
         lead={temple.intro}
         photo={photos.bannerCommunity}
       />

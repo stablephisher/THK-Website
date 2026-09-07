@@ -14,17 +14,17 @@ export const site = {
   name: 'Hari Krishna Talikota',
   shortName: 'HK Talikota',
   alternateNames: ['Talikota Harikrishna', 'Hari TDP', 'Haranna'],
-  role: 'Board Member, Sri Kanaka Durga Devasthanam',
+  role: 'Board Member, Sri Durga Malleswara Swamy Varla Devasthanam',
   roleShort: 'Devasthanam Board Member',
   secondaryRole: 'iTDP Telangana State President',
 
   // TODO(office): confirm the production domain before launch. Every canonical
   // URL, the sitemap and the social preview tags are derived from this.
-  url: 'https://talikotaharikrishna.com',
+  url: 'https://talikotaharikrishna.vercel.app',
 
   tagline: 'Serving Telangana with Dedication',
   description:
-    'Hari Krishna Talikota — Board Member, Sri Kanaka Durga Devasthanam, Indrakeeladri, and iTDP Telangana State President of the Telugu Desam Party.',
+    'Hari Krishna Talikota — Board Member, Sri Durga Malleswara Swamy Varla Devasthanam (Kanaka Durga Temple), Indrakeeladri, and iTDP Telangana State President, Telugu Desam Party Telangana.',
 
   mission:
     'Dedicated to advancing the interests of the Telugu people through principled political leadership and community service. Working tirelessly for the development, prosperity, and cultural preservation of Telangana and Andhra Pradesh.',
@@ -55,7 +55,7 @@ export const site = {
 export const roles = [
   {
     title: 'Board Member',
-    org: 'Sri Kanaka Durga Devasthanam, Indrakeeladri, Vijayawada',
+    org: 'Sri Durga Malleswara Swamy Varla Devasthanam (Sri Kanaka Durga Temple), Indrakeeladri, Vijayawada',
     href: '/community',
   },
   {
@@ -71,8 +71,8 @@ export const roles = [
  * out of the structured data — flip to true once real values are supplied.
  */
 export const contact = {
-  email: { value: 'contact@talikotaharikrishna.com', verified: false },
-  press: { value: 'press@talikotaharikrishna.com', verified: false },
+  email: { value: 'contact@talikotaharikrishna.vercel.app', verified: false },
+  press: { value: 'press@talikotaharikrishna.vercel.app', verified: false },
   phone: { value: '', display: '', verified: false },
   office: { value: 'Hyderabad, Telangana, India', verified: true },
   hours: { value: '', verified: false },
@@ -103,6 +103,10 @@ export const social = [
 
 export const party = {
   name: 'Telugu Desam Party',
+  // How the office wants the Telangana unit written wherever his own office is
+  // named alongside it. `name` stays the party's plain legal name because that
+  // is what the schema.org PoliticalParty entity has to carry.
+  telanganaUnit: 'Telugu Desam Party Telangana',
   abbr: 'TDP',
   founded: 'March 29, 1982',
   foundedISO: '1982-03-29',
@@ -130,7 +134,7 @@ export const biography = {
   journey:
     'As the iTDP Telangana State President, Hari Krishna represents the Telugu Desam Party’s vision in Telangana. He is committed to the party’s founding principles established by the legendary N.T. Rama Rao — Telugu pride, regional development, and good governance. His political work focuses on creating economic opportunities, improving infrastructure, and ensuring that the voices of Telangana’s citizens are heard at all levels of government.',
   community:
-    'Serving as a Board Member of the prestigious Sri Kanaka Durga Devasthanam in Vijayawada, Hari Krishna contributes to the administration and development of one of South India’s most revered temples. This role reflects his deep commitment to preserving cultural and religious traditions while ensuring excellent service to millions of devotees.',
+    'Serving as a Board Member of the prestigious Sri Durga Malleswara Swamy Varla Devasthanam in Vijayawada, Hari Krishna contributes to the administration and development of one of South India’s most revered temples. This role reflects his deep commitment to preserving cultural and religious traditions while ensuring excellent service to millions of devotees.',
   vision:
     'Hari Krishna envisions a Telangana that honours its rich Telugu heritage while embracing modern development. His focus is on creating economic opportunities for youth, improving infrastructure, ensuring good governance, and preserving the cultural identity that makes Telangana unique.',
 }
@@ -276,7 +280,7 @@ export const temple = {
   history:
     'The temple has a rich history spanning centuries and is considered one of the most powerful Shakti Peethas in India. It plays a central role in the spiritual and cultural life of the Telugu people.',
   intro:
-    'Hari Krishna Talikota serves as a Board Member of the Sri Kanaka Durga Devasthanam in Vijayawada, one of the most revered Hindu temples in South India. This role reflects his commitment to preserving religious and cultural traditions while ensuring excellent service to devotees.',
+    'Hari Krishna Talikota serves as a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam in Vijayawada, one of the most revered Hindu temples in South India. This role reflects his commitment to preserving religious and cultural traditions while ensuring excellent service to devotees.',
   duties: [
     {
       title: 'Temple Administration',
@@ -361,7 +365,7 @@ export const updates = []
 export const faqs = [
   {
     q: 'Who is Hari Krishna Talikota?',
-    a: 'Hari Krishna Talikota is an Indian politician who serves as the iTDP Telangana State President of the Telugu Desam Party (TDP). He is also a Board Member of the Sri Kanaka Durga Devasthanam at Indrakeeladri, Vijayawada. He is based in Hyderabad, Telangana, and is also known as Talikota Harikrishna.',
+    a: 'Hari Krishna Talikota is an Indian politician who serves as the iTDP Telangana State President of the Telugu Desam Party (TDP). He is also a Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam at Indrakeeladri, Vijayawada. He is based in Hyderabad, Telangana, and is also known as Talikota Harikrishna.',
   },
   {
     q: 'Which political party does Hari Krishna Talikota belong to?',

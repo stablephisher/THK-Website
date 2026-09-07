@@ -32,7 +32,7 @@ const Home = () => {
           <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
             <div className="on-dark lg:col-span-6 xl:col-span-5">
               <Reveal as="p" delay={0.05} className="label-rule !text-brand-400 before:!bg-brand-500">
-                {site.location.region} · {party.name}
+                {party.telanganaUnit}
               </Reveal>
 
               {/* Both names at the same size and weight — the surname is not a
@@ -147,7 +147,7 @@ const Home = () => {
                 Devasthanam Board
               </p>
               <h2 className="mt-7 font-display text-title text-white">
-                Board Member, Sri Kanaka Durga Devasthanam
+                Board Member, Sri Durga Malleswara Swamy Varla Devasthanam
               </h2>
               <p className="mt-6 text-lead text-white/70">{temple.intro}</p>
               <p className="mt-5 text-white/60">

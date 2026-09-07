@@ -41,14 +41,39 @@ const TYPES = {
   '.txt': 'text/plain; charset=utf-8',
 }
 
-/** Apply every vercel.json rule whose `source` glob matches this path. */
+/**
+ * Apply every vercel.json rule whose `source` matches this path.
+ *
+ * Vercel parses `source` with path-to-regexp, not as a raw regex, so this
+ * translates the subset actually used here: `(.*)` wildcards, `:name` params,
+ * `:name*` greedy params and `:name(a|b)` constrained params. Getting this
+ * wrong would make the local preview disagree with production about caching —
+ * which is precisely the class of bug it exists to catch.
+ */
+function sourceToRegExp(source) {
+  let out = ''
+  for (let i = 0; i < source.length; i++) {
+    const rest = source.slice(i)
+    if (rest.startsWith('(.*)')) { out += '.*'; i += 3; continue }
+    const param = /^:([A-Za-z0-9_]+)(\(([^)]+)\))?(\*|\+|\?)?/.exec(rest)
+    if (param) {
+      const [full, , , pattern, mod] = param
+      out += pattern ? `(?:${pattern})` : mod === '*' || mod === '+' ? '.*' : '[^/]+'
+      if (!pattern && (mod === '*' || mod === '?')) out += '?'
+      i += full.length - 1
+      continue
+    }
+    out += source[i].replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  }
+  return new RegExp(`^${out}$`)
+}
+
 function headersFor(pathname) {
   const out = {}
   for (const rule of rules) {
-    const re = new RegExp(
-      '^' + rule.source.replace(/\//g, '\\/').replace(/\(\.\*\)/g, '.*').replace(/\.(?=\()/g, '\\.') + '$'
-    )
-    if (re.test(pathname)) for (const h of rule.headers) out[h.key] = h.value
+    if (sourceToRegExp(rule.source).test(pathname)) {
+      for (const h of rule.headers) out[h.key] = h.value
+    }
   }
   return out
 }
