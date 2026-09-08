@@ -26,6 +26,7 @@ import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
 import NotFound from './pages/NotFound'
 import Admin from './pages/Admin'
+import AskPanel from './components/AskPanel'
 
 function App() {
   return (
@@ -56,6 +57,11 @@ function App() {
       </main>
 
       <Footer />
+
+      {/* Site-wide rather than homepage-only: a visitor can land on any page
+          from a search result or a shared link, and the questions are as useful
+          there. Hidden on /admin, which is not for visitors. */}
+      <AskPanel />
       <ScrollToTop />
     </div>
   )

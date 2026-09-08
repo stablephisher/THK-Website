@@ -1,0 +1,117 @@
+import { createHash, timingSafeEqual } from 'node:crypto'
+
+/**
+ * Turns pasted source text into a short caption for the admin panel.
+ *
+ * OPTIONAL BY DESIGN. If ANTHROPIC_API_KEY is not set this returns 501 and the
+ * panel keeps working with the caption typed by hand — the toggle in the UI is
+ * off by default and the field is always editable afterwards. Nothing is ever
+ * published without someone reading it: the summary lands in the textarea, not
+ * in the commit.
+ *
+ * That matters more than usual here. This is a real politician's site, and a
+ * model paraphrasing a news article can quietly introduce a claim the article
+ * did not make. The prompt is therefore constrained to description rather than
+ * inference, and the result is a draft for a human to approve.
+ *
+ * Environment:
+ *   ANTHROPIC_API_KEY   optional; without it the feature reports unavailable
+ *   ADMIN_PASSWORD      same credential as the publish endpoint
+ *   ADMIN_ID            optional second factor, as in publish.js
+ */
+
+const MODEL = 'claude-haiku-4-5-20251001'
+const MAX_INPUT = 12000
+
+const constantEquals = (given, expected) => {
+  if (typeof given !== 'string' || !expected) return false
+  const a = createHash('sha256').update(given).digest()
+  const b = createHash('sha256').update(expected).digest()
+  return timingSafeEqual(a, b)
+}
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', 'POST')
+    return res.status(405).json({ error: 'Method not allowed' })
+  }
+
+  const { ANTHROPIC_API_KEY, ADMIN_PASSWORD, ADMIN_ID } = process.env
+  if (!ADMIN_PASSWORD) {
+    return res.status(500).json({ error: 'Server is not configured.' })
+  }
+
+  const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body ?? {}
+  const { adminId, password, text, title } = body
+
+  if (ADMIN_ID && !constantEquals(adminId, ADMIN_ID)) {
+    return res.status(401).json({ error: 'Wrong ID or password.' })
+  }
+  if (!constantEquals(password, ADMIN_PASSWORD)) {
+    return res.status(401).json({ error: 'Wrong ID or password.' })
+  }
+  if (!ANTHROPIC_API_KEY) {
+    return res.status(501).json({
+      error:
+        'Summarising is not switched on. Add ANTHROPIC_API_KEY in Vercel to enable it, or write the caption yourself.',
+    })
+  }
+  if (!text || String(text).trim().length < 40) {
+    return res.status(400).json({ error: 'Paste at least a couple of sentences to summarise.' })
+  }
+
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        max_tokens: 300,
+        system:
+          'You write captions for the official website of Talikota Hari Krishna, an Indian ' +
+          'politician: Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam and ' +
+          'iTDP Telangana State President of the Telugu Desam Party.\n\n' +
+          'Write ONE caption of 25 to 45 words describing what the supplied text reports. ' +
+          'Rules, in order of importance:\n' +
+          '1. State only what the source states. Never add a claim, a number, a date or a ' +
+          'role that is not in the text. If the text does not say he was present, do not ' +
+          'imply he was.\n' +
+          '2. Neutral, factual register. No praise, no campaign language, no adjectives of ' +
+          'approval.\n' +
+          '3. Plain English. Keep Telugu names and place names as given.\n' +
+          '4. Reply with the caption alone — no preamble, no quotation marks.',
+        messages: [
+          {
+            role: 'user',
+            content: `${title ? `Working title: ${title}\n\n` : ''}Source text:\n\n${String(text).slice(0, MAX_INPUT)}`,
+          },
+        ],
+      }),
+    })
+
+    if (!r.ok) {
+      const detail = await r.text()
+      console.error('anthropic error', r.status, detail.slice(0, 300))
+      return res.status(502).json({ error: 'The summariser did not respond. Write the caption by hand.' })
+    }
+
+    const data = await r.json()
+    const summary = (data.content ?? [])
+      .filter((c) => c.type === 'text')
+      .map((c) => c.text)
+      .join(' ')
+      .trim()
+
+    if (!summary) {
+      return res.status(502).json({ error: 'The summariser returned nothing. Write the caption by hand.' })
+    }
+    return res.status(200).json({ ok: true, summary })
+  } catch (err) {
+    console.error('summarize failed:', err)
+    return res.status(502).json({ error: 'The summariser could not be reached.' })
+  }
+}

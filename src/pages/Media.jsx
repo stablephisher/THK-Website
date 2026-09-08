@@ -10,6 +10,7 @@ import { site, social, updates } from '../data/site'
 import { photos, gallery, galleryGroups } from '../data/photos'
 import { videos, channel } from '../data/videos'
 import uploads from '../data/uploads.json'
+import SourceLinks from '../components/SourceLinks'
 
 const socialIcons = { Instagram: FaInstagram, Facebook: FaFacebookF, X: FaXTwitter, YouTube: FaYoutube }
 
@@ -20,9 +21,26 @@ const formatDate = (iso) =>
 const Lightbox = ({ items, index, onClose, onStep }) => {
   const item = items[index]
 
+  // Mount at rest, then flip on the next frame so the CSS transition has two
+  // states to move between; on close, run the reverse and only unmount when it
+  // has finished. Without the delayed unmount the panel vanishes instantly and
+  // the exit animation is never seen — which is what made it feel abrupt.
+  const [shown, setShown] = useState(false)
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setShown(true))
+    return () => cancelAnimationFrame(id)
+  }, [])
+
+  const dismiss = useCallback(() => {
+    setShown(false)
+    // Matches the 260ms transition below. prefers-reduced-motion collapses the
+    // transition to nothing, so the wait is harmless there.
+    setTimeout(onClose, 260)
+  }, [onClose])
+
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') dismiss()
       if (e.key === 'ArrowRight') onStep(1)
       if (e.key === 'ArrowLeft') onStep(-1)
     }
@@ -33,16 +51,22 @@ const Lightbox = ({ items, index, onClose, onStep }) => {
       document.removeEventListener('keydown', onKey)
       document.body.style.overflow = prev
     }
-  }, [onClose, onStep])
+  }, [dismiss, onStep])
 
   if (!item) return null
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex flex-col bg-ink-950/95 backdrop-blur-sm"
+      className={`lightbox fixed inset-0 z-[60] flex flex-col bg-ink-950/95 backdrop-blur-sm ${
+        shown ? 'is-open' : ''
+      }`}
       role="dialog"
       aria-modal="true"
       aria-label={`Photo ${index + 1} of ${items.length}: ${item.caption}`}
+      onClick={(e) => {
+        // Clicking the backdrop closes; clicks inside the figure do not.
+        if (e.target === e.currentTarget) dismiss()
+      }}
     >
       <div className="flex items-center justify-between gap-4 px-4 py-3 sm:px-6">
         <p className="font-sans text-micro uppercase text-brand-400">
@@ -50,7 +74,7 @@ const Lightbox = ({ items, index, onClose, onStep }) => {
         </p>
         <button
           type="button"
-          onClick={onClose}
+          onClick={dismiss}
           autoFocus
           className="grid h-11 w-11 place-items-center rounded-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white"
           aria-label="Close photo viewer"
@@ -69,7 +93,7 @@ const Lightbox = ({ items, index, onClose, onStep }) => {
           <FaChevronLeft aria-hidden="true" />
         </button>
 
-        <figure className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4">
+        <figure className="lightbox-panel flex min-h-0 flex-1 flex-col items-center justify-center gap-4">
           <img
             src={`/photos/${item.slug}-1200.webp`}
             onError={(e) => {
@@ -84,6 +108,9 @@ const Lightbox = ({ items, index, onClose, onStep }) => {
               <p lang="te" className="mt-2 text-xs leading-relaxed text-white/60">
                 {item.telugu}
               </p>
+            )}
+            {item.sources?.length > 0 && (
+              <SourceLinks sources={item.sources} tone="dark" className="mt-3 justify-center" />
             )}
           </figcaption>
         </figure>
@@ -119,7 +146,10 @@ const Media = () => {
         height: 1067,
         alt: u.description || u.title,
         caption: u.title,
-        group: 'recent',
+        // The category chosen in the admin panel, so uploads land in the same
+        // filters as the rest of the gallery instead of an "uncategorised" pile.
+        group: u.category || 'party',
+        sources: u.sources ?? [],
       })),
     []
   )
@@ -245,6 +275,9 @@ const Media = () => {
                     </p>
                   )}
                 </button>
+                {item.sources?.length > 0 && (
+                  <SourceLinks sources={item.sources} className="mt-2" />
+                )}
               </Reveal>
             ))}
           </ul>
@@ -358,6 +391,9 @@ const Media = () => {
                       {update.title}
                     </h3>
                     <p className="mt-2 text-sm leading-relaxed text-ink-600">{update.summary}</p>
+                    {update.sources?.length > 0 && (
+                      <SourceLinks sources={update.sources} className="mt-3" />
+                    )}
                   </Reveal>
                 ))}
               </div>

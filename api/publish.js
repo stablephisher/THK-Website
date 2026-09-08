@@ -70,14 +70,42 @@ const passwordOk = (given, expected) => {
   return timingSafeEqual(a, b)
 }
 
-const slugify = (s) =>
-  String(s)
+/**
+ * ASCII slug, with a fallback for titles that have no Latin characters.
+ *
+ * The first real upload was titled in Telugu and slugified to "25-25" — every
+ * letter was stripped and only the digits survived, which is meaningless and
+ * would collide with the next Telugu title containing the same numbers. The
+ * filename has to stay ASCII (Telugu percent-encodes into 200-character URLs,
+ * which git on Windows would not index earlier in this project), so when the
+ * slug degenerates it falls back to a short digest of the original title.
+ */
+const slugify = (value) => {
+  const raw = String(value ?? '')
+  const ascii = raw
     .normalize('NFKD')
     .replace(/[̀-ͯ]/g, '')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
-    .slice(0, 60) || 'item'
+    .slice(0, 60)
+  const letters = ascii.replace(/[^a-z]/g, '')
+  if (letters.length >= 3) return ascii
+  const digest = createHash('sha256').update(raw).digest('hex').slice(0, 8)
+  return ascii ? `${ascii}-${digest}` : digest
+}
+
+const CATEGORIES = ['party', 'constituency', 'temple', 'culture', 'press']
+
+/** Sources arrive as [{label, url}]; keep only entries with a real http(s) URL. */
+const cleanSources = (list) =>
+  (Array.isArray(list) ? list : [])
+    .map((s) => ({
+      label: String(s?.label ?? '').trim().slice(0, 120),
+      url: String(s?.url ?? '').trim(),
+    }))
+    .filter((s) => /^https?:\/\/[^\s]+$/i.test(s.url))
+    .slice(0, 8)
 
 const detect = (buf) =>
   SIGNATURES.find((s) => s.magic.every((byte, i) => buf[i] === byte)) ?? null
@@ -88,7 +116,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { ADMIN_PASSWORD, GITHUB_TOKEN } = process.env
+  const { ADMIN_PASSWORD, ADMIN_ID, GITHUB_TOKEN } = process.env
   if (!ADMIN_PASSWORD || !GITHUB_TOKEN) {
     return res.status(500).json({
       error: 'Server is not configured. ADMIN_PASSWORD and GITHUB_TOKEN must be set in Vercel.',
@@ -96,16 +124,33 @@ export default async function handler(req, res) {
   }
 
   const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body ?? {}
-  const { password, kind, title, description, image, filename } = body
+  const { adminId, password, action = 'create', id: targetId } = body
+  const { kind, title, description, image, category, sources } = body
 
+  // ADMIN_ID is optional: if it is set in the environment it must match, so the
+  // panel needs both halves. Both comparisons are constant-time.
+  if (ADMIN_ID && !passwordOk(adminId, ADMIN_ID)) {
+    return res.status(401).json({ error: 'Wrong ID or password.' })
+  }
   if (!passwordOk(password, ADMIN_PASSWORD)) {
-    return res.status(401).json({ error: 'Wrong password.' })
+    return res.status(401).json({ error: 'Wrong ID or password.' })
   }
-  if (!title || String(title).trim().length < 3) {
-    return res.status(400).json({ error: 'A title of at least 3 characters is required.' })
+  if (!['create', 'update', 'delete', 'list'].includes(action)) {
+    return res.status(400).json({ error: 'Unknown action.' })
   }
-  if (kind !== 'photo' && kind !== 'update') {
+  if (action !== 'list' && kind !== 'photo' && kind !== 'update') {
     return res.status(400).json({ error: 'kind must be "photo" or "update".' })
+  }
+  if ((action === 'update' || action === 'delete') && !targetId) {
+    return res.status(400).json({ error: 'An id is required to edit or remove an entry.' })
+  }
+  if (action === 'create' || action === 'update') {
+    if (!title || String(title).trim().length < 3) {
+      return res.status(400).json({ error: 'A title of at least 3 characters is required.' })
+    }
+    if (category && !CATEGORIES.includes(category)) {
+      return res.status(400).json({ error: `Category must be one of: ${CATEGORIES.join(', ')}.` })
+    }
   }
 
   // Validate the upload BEFORE any network call, so a bad file returns the real
@@ -113,7 +158,9 @@ export default async function handler(req, res) {
   let base64 = null
   let buf = null
   let sig = null
-  if (kind === 'photo') {
+  // On edit the image is optional — the caption, category or sources may be all
+  // that is changing, and re-uploading the file to fix a typo would be absurd.
+  if (kind === 'photo' && (action === 'create' || image)) {
     if (!image) return res.status(400).json({ error: 'An image file is required.' })
     base64 = String(image).includes(',') ? String(image).split(',')[1] : String(image)
     buf = Buffer.from(base64, 'base64')
@@ -149,36 +196,86 @@ export default async function handler(req, res) {
     manifest.photos ??= []
     manifest.updates ??= []
 
+    // `list` needs nothing else — hand back what is published so the panel can
+    // show it for editing.
+    if (action === 'list') {
+      return res.status(200).json({ ok: true, ...manifest })
+    }
+
     const now = new Date().toISOString()
-    const id = `${now.slice(0, 10)}-${slugify(title)}`
     const treeItems = []
     let addedPath = null
+    let commitVerb = action
 
-    // ---- the image, if this is a photo ------------------------------------
-    if (kind === 'photo') {
-      addedPath = `${UPLOAD_DIR}/${id}.${sig.ext}`
-      const blob = await api(`/repos/${REPO}/git/blobs`, GITHUB_TOKEN, {
-        method: 'POST',
-        body: JSON.stringify({ content: base64, encoding: 'base64' }),
-      })
-      treeItems.push({ path: addedPath, mode: '100644', type: 'blob', sha: blob.sha })
+    const collection = kind === 'photo' ? manifest.photos : manifest.updates
+    const existingIndex = targetId ? collection.findIndex((e) => e.id === targetId) : -1
 
-      manifest.photos.unshift({
-        id,
-        title: String(title).trim(),
-        description: String(description ?? '').trim(),
-        src: `/photos/uploads/${id}.${sig.ext}`,
-        bytes: buf.length,
-        publishedAt: now,
-      })
+    if ((action === 'update' || action === 'delete') && existingIndex === -1) {
+      return res.status(404).json({ error: 'That entry no longer exists.' })
+    }
+
+    if (action === 'delete') {
+      const [removed] = collection.splice(existingIndex, 1)
+      // The image file is deliberately left in the repository. Removing a blob
+      // needs the full tree walked to rebuild it without that path, and an
+      // orphaned 140KB file is a far smaller problem than a delete that half
+      // succeeds. It stops being referenced, which is what "removed" means here.
+      commitVerb = `Remove ${kind}: ${removed.title}`
+    } else if (action === 'update') {
+      const entry = collection[existingIndex]
+      entry.title = String(title).trim()
+      if (kind === 'photo') entry.description = String(description ?? '').trim()
+      else entry.summary = String(description ?? '').trim()
+      entry.category = category || entry.category || (kind === 'photo' ? 'party' : undefined)
+      entry.sources = cleanSources(sources)
+      entry.updatedAt = now
+
+      // A replacement image keeps the entry's id, so links to it stay valid.
+      if (kind === 'photo' && base64) {
+        addedPath = `${UPLOAD_DIR}/${entry.id}.${sig.ext}`
+        const blob = await api(`/repos/${REPO}/git/blobs`, GITHUB_TOKEN, {
+          method: 'POST',
+          body: JSON.stringify({ content: base64, encoding: 'base64' }),
+        })
+        treeItems.push({ path: addedPath, mode: '100644', type: 'blob', sha: blob.sha })
+        entry.src = `/photos/uploads/${entry.id}.${sig.ext}`
+        entry.bytes = buf.length
+      }
+      commitVerb = `Edit ${kind}: ${entry.title}`
     } else {
-      manifest.updates.unshift({
+      // create
+      const id = `${now.slice(0, 10)}-${slugify(title)}`
+      if (collection.some((e) => e.id === id)) {
+        return res.status(409).json({ error: 'Something with that title was already published today.' })
+      }
+      const common = {
         id,
         title: String(title).trim(),
-        summary: String(description ?? '').trim(),
-        date: now.slice(0, 10),
+        category: category || (kind === 'photo' ? 'party' : undefined),
+        sources: cleanSources(sources),
         publishedAt: now,
-      })
+      }
+      if (kind === 'photo') {
+        addedPath = `${UPLOAD_DIR}/${id}.${sig.ext}`
+        const blob = await api(`/repos/${REPO}/git/blobs`, GITHUB_TOKEN, {
+          method: 'POST',
+          body: JSON.stringify({ content: base64, encoding: 'base64' }),
+        })
+        treeItems.push({ path: addedPath, mode: '100644', type: 'blob', sha: blob.sha })
+        collection.unshift({
+          ...common,
+          description: String(description ?? '').trim(),
+          src: `/photos/uploads/${id}.${sig.ext}`,
+          bytes: buf.length,
+        })
+      } else {
+        collection.unshift({
+          ...common,
+          summary: String(description ?? '').trim(),
+          date: now.slice(0, 10),
+        })
+      }
+      commitVerb = `Publish ${kind}: ${String(title).trim()}`
     }
 
     // ---- manifest + image land in ONE commit, so Vercel deploys once ------
@@ -198,7 +295,7 @@ export default async function handler(req, res) {
     const commit = await api(`/repos/${REPO}/git/commits`, GITHUB_TOKEN, {
       method: 'POST',
       body: JSON.stringify({
-        message: `Publish ${kind}: ${String(title).trim()}\n\nAdded from the admin panel.`,
+        message: `${commitVerb}\n\nFrom the admin panel.`,
         tree: tree.sha,
         parents: [headSha],
       }),
