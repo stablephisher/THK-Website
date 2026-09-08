@@ -1,5 +1,9 @@
 /**
- * Videos from the official channel, youtube.com/@TeamHaranna.
+ * Videos from Team Haranna, youtube.com/@TeamHaranna.
+ *
+ * NOT an official channel. It is run by supporters, and the office has said so
+ * plainly — describing it as official would be a claim about who speaks for him,
+ * and the wrong one. It is presented as video coverage, which is what it is.
  *
  * Pulled from the channel's public Atom feed
  * (youtube.com/feeds/videos.xml?channel_id=UCGGggwMXVxhNY9q9CZ6325Q), so every
@@ -22,6 +26,9 @@
 export const channel = {
   handle: '@TeamHaranna',
   name: 'Team Haranna',
+  // Shown wherever the channel is credited, so the relationship is never
+  // overstated anywhere on the site.
+  relationship: 'Supporter-run channel, not operated by the office',
   id: 'UCGGggwMXVxhNY9q9CZ6325Q',
   url: 'https://www.youtube.com/@TeamHaranna',
 }

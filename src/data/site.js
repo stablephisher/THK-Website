@@ -78,26 +78,60 @@ export const contact = {
   hours: { value: '', verified: false },
 }
 
+/**
+ * Accounts, with `official` saying whether the office runs it.
+ *
+ * The distinction is not decoration. Team Haranna is a supporter-run channel;
+ * listing it beside the office's own accounts under one heading would assert
+ * that it speaks for him, which it does not. Anything marked official:false is
+ * labelled as such wherever it appears.
+ */
 export const social = [
   {
     name: 'Instagram',
     handle: '@hari_krishna_talikota',
     url: 'https://www.instagram.com/hari_krishna_talikota/',
+    official: true,
   },
   {
     name: 'Facebook',
     handle: 'Talikota Harikrishna',
     url: 'https://www.facebook.com/p/Talikota-Harikrishna-100066746782661/',
+    official: true,
   },
   {
     name: 'X',
     handle: '@THK_iTDP',
     url: 'https://x.com/THK_iTDP',
+    official: true,
   },
   {
     name: 'YouTube',
     handle: '@TeamHaranna',
     url: 'https://www.youtube.com/@TeamHaranna',
+    official: false,
+    note: 'Supporter-run channel',
+  },
+]
+
+/**
+ * X accounts worth following alongside his own — his, and the party's.
+ * Rendered as links rather than an embedded timeline: X's widget returns an
+ * empty frame for an account with no posts, which is a broken-looking box
+ * rather than a feed.
+ */
+export const xAccounts = [
+  {
+    name: 'Talikota Hari Krishna',
+    handle: '@THK_iTDP',
+    url: 'https://x.com/THK_iTDP',
+    description: 'His own account',
+  },
+  {
+    name: 'Telugu Desam Party',
+    handle: '@JaiTDP',
+    url: 'https://x.com/JaiTDP',
+    description: 'The party’s national account',
   },
 ]
 
@@ -385,7 +419,7 @@ export const faqs = [
   },
   {
     q: 'How can I contact Talikota Hari Krishna?',
-    a: 'You can reach the office through the contact page on this website, or follow the official social media channels — Instagram (@hari_krishna_talikota), Facebook (Talikota Harikrishna) and X (@THK_iTDP).',
+    a: 'You can reach the office through the contact page on this website, or follow the official social media accounts — Instagram (@hari_krishna_talikota), Facebook (Talikota Harikrishna) and X (@THK_iTDP). The Team Haranna YouTube channel carries video coverage but is run by supporters, not by the office.',
   },
 ]
 

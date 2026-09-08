@@ -75,7 +75,7 @@ const Footer = () => {
                     <a
                       href={s.url}
                       target="_blank"
-                      rel="noopener noreferrer me"
+                      rel={s.official === false ? 'noopener noreferrer' : 'noopener noreferrer me'}
                       aria-label={`${site.name} on ${s.name} (opens in a new tab)`}
                       className="grid h-10 w-10 place-items-center bg-white/5 text-ink-300 transition-colors hover:bg-brand-500 hover:text-ink-900"
                     >

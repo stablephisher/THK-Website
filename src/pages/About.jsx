@@ -171,7 +171,7 @@ const About = () => {
               </p>
             </Reveal>
             <Reveal delay={0.1} className="lg:col-span-8">
-              <PostsFeed limit={3} className="max-w-2xl" label="Recent posts" />
+              <PostsFeed />
             </Reveal>
           </div>
         </div>

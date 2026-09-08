@@ -3,7 +3,7 @@ import { createHash, timingSafeEqual } from 'node:crypto'
 /**
  * Turns pasted source text into a short caption for the admin panel.
  *
- * OPTIONAL BY DESIGN. If ANTHROPIC_API_KEY is not set this returns 501 and the
+ * OPTIONAL BY DESIGN. If GEMINI_API_KEY is not set this returns 501 and the
  * panel keeps working with the caption typed by hand — the toggle in the UI is
  * off by default and the field is always editable afterwards. Nothing is ever
  * published without someone reading it: the summary lands in the textarea, not
@@ -15,13 +15,31 @@ import { createHash, timingSafeEqual } from 'node:crypto'
  * inference, and the result is a draft for a human to approve.
  *
  * Environment:
- *   ANTHROPIC_API_KEY   optional; without it the feature reports unavailable
- *   ADMIN_PASSWORD      same credential as the publish endpoint
- *   ADMIN_ID            optional second factor, as in publish.js
+ *   GEMINI_API_KEY   optional; without it the feature reports unavailable. Set
+ *                    it in Vercel, never in the repository — this one is public.
+ *   ADMIN_PASSWORD   same credential as the publish endpoint
+ *   ADMIN_ID         optional second factor, as in publish.js
  */
 
-const MODEL = 'claude-haiku-4-5-20251001'
+// Gemini rather than Anthropic: the office asked for it, and the free tier
+// covers the handful of captions this endpoint will ever draft.
+const MODEL = 'gemini-flash-latest'
+const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`
 const MAX_INPUT = 12000
+
+const INSTRUCTION = [
+  'You write captions for the official website of Talikota Hari Krishna, an Indian politician:',
+  'Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam and iTDP Telangana State',
+  'President of the Telugu Desam Party.',
+  '',
+  'Write ONE caption of 25 to 45 words describing what the supplied text reports.',
+  'Rules, in order of importance:',
+  '1. State only what the source states. Never add a claim, a number, a date or a role that is',
+  '   not in the text. If the text does not say he was present, do not imply he was.',
+  '2. Neutral, factual register. No praise, no campaign language, no adjectives of approval.',
+  '3. Plain English. Keep Telugu names and place names as given.',
+  '4. Reply with the caption alone - no preamble, no quotation marks.',
+].join('\n')
 
 const constantEquals = (given, expected) => {
   if (typeof given !== 'string' || !expected) return false
@@ -36,7 +54,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { ANTHROPIC_API_KEY, ADMIN_PASSWORD, ADMIN_ID } = process.env
+  const { GEMINI_API_KEY, ADMIN_PASSWORD, ADMIN_ID } = process.env
   if (!ADMIN_PASSWORD) {
     return res.status(500).json({ error: 'Server is not configured.' })
   }
@@ -50,64 +68,88 @@ export default async function handler(req, res) {
   if (!constantEquals(password, ADMIN_PASSWORD)) {
     return res.status(401).json({ error: 'Wrong ID or password.' })
   }
-  if (!ANTHROPIC_API_KEY) {
+  if (!GEMINI_API_KEY) {
     return res.status(501).json({
       error:
-        'Summarising is not switched on. Add ANTHROPIC_API_KEY in Vercel to enable it, or write the caption yourself.',
+        'Summarising is not switched on. Add GEMINI_API_KEY in Vercel to enable it, or write the caption yourself.',
     })
   }
   if (!text || String(text).trim().length < 40) {
     return res.status(400).json({ error: 'Paste at least a couple of sentences to summarise.' })
   }
 
-  try {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
+  const prompt = [
+    title ? `Working title: ${title}` : null,
+    'Source text:',
+    String(text).slice(0, MAX_INPUT),
+  ]
+    .filter(Boolean)
+    .join('\n\n')
+
+  const request = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      // A header rather than a query parameter, so the key never lands in a
+      // URL that a proxy or CDN might log.
+      'X-goog-api-key': GEMINI_API_KEY,
+    },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: INSTRUCTION }] },
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: {
+        // Flash spends output budget on thinking tokens before it writes, so a
+        // 300-token cap returned a caption cut off after six words. The budget
+        // is switched off — this is a paraphrase, not a reasoning task — and the
+        // cap raised well clear of a 45-word answer.
+        thinkingConfig: { thinkingBudget: 0 },
+        maxOutputTokens: 800,
+        temperature: 0.2,
       },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 300,
-        system:
-          'You write captions for the official website of Talikota Hari Krishna, an Indian ' +
-          'politician: Board Member of the Sri Durga Malleswara Swamy Varla Devasthanam and ' +
-          'iTDP Telangana State President of the Telugu Desam Party.\n\n' +
-          'Write ONE caption of 25 to 45 words describing what the supplied text reports. ' +
-          'Rules, in order of importance:\n' +
-          '1. State only what the source states. Never add a claim, a number, a date or a ' +
-          'role that is not in the text. If the text does not say he was present, do not ' +
-          'imply he was.\n' +
-          '2. Neutral, factual register. No praise, no campaign language, no adjectives of ' +
-          'approval.\n' +
-          '3. Plain English. Keep Telugu names and place names as given.\n' +
-          '4. Reply with the caption alone — no preamble, no quotation marks.',
-        messages: [
-          {
-            role: 'user',
-            content: `${title ? `Working title: ${title}\n\n` : ''}Source text:\n\n${String(text).slice(0, MAX_INPUT)}`,
-          },
-        ],
-      }),
-    })
+    }),
+  }
+
+  try {
+    // The free tier returns 503 UNAVAILABLE and 429 intermittently — observed
+    // repeatedly while building this, on requests that succeed moments later.
+    // One attempt would surface that to the user as a failure they cannot act
+    // on, so transient statuses are retried with a short backoff. 4xx other
+    // than 429 is a real error and is not retried.
+    let r
+    for (let attempt = 0; attempt < 3; attempt++) {
+      r = await fetch(ENDPOINT, request)
+      if (r.ok || ![429, 500, 502, 503, 504].includes(r.status)) break
+      if (attempt < 2) await new Promise((s) => setTimeout(s, 600 * (attempt + 1)))
+    }
 
     if (!r.ok) {
       const detail = await r.text()
-      console.error('anthropic error', r.status, detail.slice(0, 300))
-      return res.status(502).json({ error: 'The summariser did not respond. Write the caption by hand.' })
+      console.error('gemini error', r.status, detail.slice(0, 300))
+      return res
+        .status(502)
+        .json({ error: 'The summariser did not respond. Write the caption by hand.' })
     }
 
     const data = await r.json()
-    const summary = (data.content ?? [])
-      .filter((c) => c.type === 'text')
-      .map((c) => c.text)
+    const candidate = data.candidates?.[0]
+    // A truncated caption is worse than none: it would be published as a
+    // sentence that stops mid-clause.
+    if (candidate?.finishReason && !['STOP', 'MAX_TOKENS'].includes(candidate.finishReason)) {
+      console.error('gemini finishReason', candidate.finishReason)
+      return res
+        .status(502)
+        .json({ error: 'The summariser stopped early. Write the caption by hand.' })
+    }
+    const summary = (candidate?.content?.parts ?? [])
+      .map((part) => part.text ?? '')
       .join(' ')
+      .replace(/^["“]|["”]$/g, '')
       .trim()
 
     if (!summary) {
-      return res.status(502).json({ error: 'The summariser returned nothing. Write the caption by hand.' })
+      return res
+        .status(502)
+        .json({ error: 'The summariser returned nothing. Write the caption by hand.' })
     }
     return res.status(200).json({ ok: true, summary })
   } catch (err) {

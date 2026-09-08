@@ -178,7 +178,7 @@ const Media = () => {
     about: { '@id': `${site.url}/#person` },
     // Surfacing the gallery as ImageObjects gives Google Images real captions
     // to index against, which is a large share of political-name search traffic.
-    hasPart: gallery.slice(0, 12).map((g) => ({
+    hasPart: allPhotos.slice(0, 12).map((g) => ({
       '@type': 'ImageObject',
       contentUrl: `${site.url}/photos/${g.slug}-1200.webp`,
       caption: g.caption,
@@ -218,8 +218,13 @@ const Media = () => {
             >
               {galleryGroups.map((g) => {
                 const active = group === g.id
+                // Counted from allPhotos, not `gallery`: the grid renders uploads
+                // too, so counting the static manifest showed 3 under a filter
+                // that displayed 4.
                 const count =
-                  g.id === 'all' ? gallery.length : gallery.filter((x) => x.group === g.id).length
+                  g.id === 'all'
+                    ? allPhotos.length
+                    : allPhotos.filter((x) => x.group === g.id).length
                 if (!count) return null
                 return (
                   <button
@@ -291,7 +296,7 @@ const Media = () => {
             <div>
               <p className="eyebrow">Video</p>
               <h2 className="mt-5 font-display text-display text-white">
-                From the official channel
+                Video coverage
               </h2>
             </div>
             <a
@@ -371,7 +376,7 @@ const Media = () => {
 
           <div className="mt-12">
             {officeUpdates.length === 0 ? (
-              <PostsFeed limit={4} className="mx-auto max-w-2xl" label="Recent posts from the office" />
+              <PostsFeed />
             ) : (
               <div className="grid gap-5 md:grid-cols-2">
                 {officeUpdates.map((update, i) => (
@@ -418,7 +423,7 @@ const Media = () => {
                   <a
                     href={s.url}
                     target="_blank"
-                    rel="noopener noreferrer me"
+                    rel={s.official === false ? 'noopener noreferrer' : 'noopener noreferrer me'}
                     className="group flex h-full items-center gap-4 border-t hairline py-6 transition-colors hover:border-ink-900"
                   >
                     <span className="grid h-11 w-11 shrink-0 place-items-center bg-ink-900 text-base text-brand-400 transition-transform duration-300 group-hover:scale-105">
@@ -430,6 +435,13 @@ const Media = () => {
                         <span className="sr-only"> (opens in a new tab)</span>
                       </span>
                       <span className="block truncate text-sm text-ink-500">{s.handle}</span>
+                      {/* rel="me" asserts ownership, so it is only correct on
+                          accounts the office actually runs. */}
+                      {s.official === false && (
+                        <span className="mt-0.5 block text-xs text-ink-400">
+                          {s.note ?? 'Not run by the office'}
+                        </span>
+                      )}
                     </span>
                     <FaArrowRight
                       className="ml-auto shrink-0 text-ink-300 transition-all duration-300 group-hover:translate-x-1 group-hover:text-brand-700"

@@ -62,7 +62,10 @@ const QUESTIONS = [
   },
   {
     q: 'What are his social media accounts?',
-    a: `The official accounts are ${social.map((s) => `${s.name} (${s.handle})`).join(', ')}. Anything else is not run by the office.`,
+    a: `The official accounts are ${social
+      .filter((s) => s.official)
+      .map((s) => `${s.name} (${s.handle})`)
+      .join(', ')}. Video coverage also appears on ${social.find((s) => !s.official)?.handle ?? 'YouTube'}, a supporter-run channel that is not operated by the office. Anything else is not his.`,
     links: [
       ...(xAccount ? [{ href: xAccount.url, label: `X — ${xAccount.handle}` }] : []),
       ...(instagram ? [{ href: instagram.url, label: `Instagram — ${instagram.handle}` }] : []),
@@ -71,7 +74,7 @@ const QUESTIONS = [
   },
   {
     q: 'Where can I see photographs and videos?',
-    a: 'The media page carries the photo gallery — party events, constituency programmes, temple service and cultural celebrations — alongside videos from the official YouTube channel.',
+    a: 'The media page carries the photo gallery — party events, constituency programmes, temple service and cultural celebrations — alongside video coverage from Team Haranna, a supporter-run YouTube channel that is not operated by the office.',
     links: [{ to: '/media', label: 'Photographs and video' }],
   },
   {

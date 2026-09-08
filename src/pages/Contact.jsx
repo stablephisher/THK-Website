@@ -153,7 +153,7 @@ const Contact = () => {
                     <a
                       href={s.url}
                       target="_blank"
-                      rel="noopener noreferrer me"
+                      rel={s.official === false ? 'noopener noreferrer' : 'noopener noreferrer me'}
                       aria-label={`${site.name} on ${s.name} (opens in a new tab)`}
                       className="grid h-11 w-11 place-items-center bg-ink-900 text-brand-400 transition-colors hover:bg-ink-700"
                     >

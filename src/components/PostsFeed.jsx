@@ -1,162 +1,52 @@
-import { useEffect, useRef, useState } from 'react'
-import { social } from '../data/site'
-
-const X_ACCOUNT = social.find((s) => s.name === 'X')
+import { FaXTwitter, FaArrowRight } from 'react-icons/fa6'
+import { xAccounts } from '../data/site'
 
 /**
- * Embedded recent posts from the office's X account.
+ * Links to the X accounts, in place of an embedded timeline.
  *
- * HOW IT DEGRADES
- * The markup is a plain anchor to the profile. X's widgets.js replaces that
- * anchor with an iframe once it loads; if the script is blocked, fails, or the
- * account is ever restricted, the anchor simply stays a working link. That is
- * the whole fallback strategy, and it is why the link text has to read as
- * something a visitor would want to click rather than as a placeholder.
+ * WHY NOT THE EMBED
+ * It was an embedded timeline, and it rendered an empty frame. The cause is not
+ * fixable from here: the account has essentially no posts, so X's syndication
+ * endpoint returns a shell with no entries — measured at 1,017 bytes against
+ * 178KB and 701KB for two large accounts checked as a control. The widget
+ * itself worked, the CSP allowed it, and there was simply nothing to show.
  *
- * WHY IT LOADS LATE
- * widgets.js is a third-party script on a site that otherwise makes none. It is
- * injected only when the section is near the viewport, so it costs nothing on
- * pages that are never scrolled that far, and never blocks first paint.
+ * Shipping a box that is reliably empty is worse than not shipping one, so this
+ * sends people to the accounts instead. It also drops a third-party script and
+ * two framed origins from the page, which is why the CSP no longer carries the
+ * twitter.com exceptions.
  *
- * PRERENDER SAFETY
- * Everything touching `document` is inside the effect. scripts/prerender.js
- * runs this through renderToString, where the anchor is all that is emitted —
- * which is also what a non-JS crawler sees, and it is a real link.
+ * It shows his account and the party's, per the office.
  */
-const SCRIPT_SRC = 'https://platform.twitter.com/widgets.js'
-
-const PostsFeed = ({ limit = 3, className = '', label = 'Recent posts on X' }) => {
-  const holder = useRef(null)
-  const started = useRef(false)
-  const [state, setState] = useState('idle') // idle | loading | ready | failed
-
-  // Deliberately [] — this must run once. An earlier version depended on
-  // `state`, so every transition tore down the observer and restarted the
-  // timeout, and the deadline fired before the script was ever injected.
-  // The guards are refs for the same reason.
-  useEffect(() => {
-    const node = holder.current
-    if (!node || !X_ACCOUNT) return
-
-    let cancelled = false
-    let deadline
-
-    const render = () => {
-      if (cancelled) return
-      const api = window.twttr?.widgets
-      if (!api) return setState('failed')
-      api
-        .load(node)
-        .then(() => !cancelled && setState('ready'))
-        .catch(() => !cancelled && setState('failed'))
-    }
-
-    const start = () => {
-      if (cancelled || started.current) return
-      started.current = true
-      setState('loading')
-
-      // Only now does the clock start. If the widget has not rendered within
-      // 12s — blocked, offline, throttled — drop the loading state and let the
-      // anchor stand as the visible link.
-      deadline = setTimeout(() => {
-        if (!cancelled) setState((prev) => (prev === 'ready' ? prev : 'failed'))
-      }, 12000)
-
-      if (window.twttr?.widgets) return render()
-
-      const existing = document.querySelector(`script[src="${SCRIPT_SRC}"]`)
-      const target = existing ?? document.createElement('script')
-      target.addEventListener('load', render, { once: true })
-      target.addEventListener('error', () => !cancelled && setState('failed'), { once: true })
-      if (!existing) {
-        target.src = SCRIPT_SRC
-        target.async = true
-        document.head.appendChild(target)
-      }
-    }
-
-    // Already on screen at mount, or no IntersectionObserver: load now. The
-    // rect check also covers environments where the observer never fires
-    // because the document is not being painted.
-    const near = () => {
-      const r = node.getBoundingClientRect()
-      return r.top < window.innerHeight + 400 && r.bottom > -400
-    }
-    if (typeof IntersectionObserver === 'undefined' || near()) {
-      start()
-      return () => {
-        cancelled = true
-        clearTimeout(deadline)
-      }
-    }
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          io.disconnect()
-          start()
-        }
-      },
-      { rootMargin: '400px' }
-    )
-    io.observe(node)
-
-    // Backstop for the same non-painting case: if nothing has fired after a
-    // few seconds but the section has since scrolled into range, load anyway.
-    const poll = setInterval(() => {
-      if (started.current) return clearInterval(poll)
-      if (near()) {
-        clearInterval(poll)
-        io.disconnect()
-        start()
-      }
-    }, 1000)
-
-    return () => {
-      cancelled = true
-      io.disconnect()
-      clearInterval(poll)
-      clearTimeout(deadline)
-    }
-  }, [])
-
-  if (!X_ACCOUNT) return null
-
-  return (
-    <div className={className}>
-      <div ref={holder} className="min-h-[8rem]">
-        <a
-          className="twitter-timeline"
-          data-tweet-limit={limit}
-          data-theme="light"
-          data-chrome="noheader nofooter noborders transparent"
-          data-dnt="true"
-          href={X_ACCOUNT.url}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {label} ({X_ACCOUNT.handle})
-        </a>
-      </div>
-
-      {state === 'failed' && (
-        <p className="mt-4 text-sm text-ink-600">
-          Posts could not be loaded here.{' '}
-          <a
-            href={X_ACCOUNT.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-brand-800 underline underline-offset-4"
-          >
-            Read them on X
-            <span className="sr-only"> (opens in a new tab)</span>
-          </a>
-          .
-        </p>
-      )}
-    </div>
-  )
-}
+const PostsFeed = ({ className = '' }) => (
+  <div className={`grid gap-4 sm:grid-cols-2 ${className}`}>
+    {xAccounts.map((a) => (
+      <a
+        key={a.url}
+        href={a.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group flex items-center gap-4 border hairline bg-white p-5 transition-colors hover:border-ink-900"
+      >
+        <span className="grid h-11 w-11 shrink-0 place-items-center bg-ink-900 text-base text-white transition-transform duration-300 group-hover:scale-105">
+          <FaXTwitter aria-hidden="true" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-display text-base font-semibold text-ink-900">
+            {a.name}
+            <span className="sr-only"> on X (opens in a new tab)</span>
+          </span>
+          <span className="block truncate text-sm text-ink-500">
+            {a.handle} · {a.description}
+          </span>
+        </span>
+        <FaArrowRight
+          className="shrink-0 text-ink-300 transition-all duration-300 group-hover:translate-x-1 group-hover:text-brand-700"
+          aria-hidden="true"
+        />
+      </a>
+    ))}
+  </div>
+)
 
 export default PostsFeed
